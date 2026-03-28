@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const Project = require('./models/Project');
-const Admin = require('./models/Admin');
+
 
 dotenv.config();
 
@@ -12,15 +12,8 @@ const seedData = async () => {
 
     // Clear existing projects/admin
     await Project.deleteMany({});
-    await Admin.deleteMany({});
 
-    // 1. Create Default Admin
-    const admin = new Admin({
-      email: process.env.ADMIN_EMAIL || 'admin@college.edu',
-      password: process.env.ADMIN_PASSWORD || 'admin123'
-    });
-    await admin.save();
-    console.log('✅ Default Admin created: admin@college.edu / admin123');
+
 
     // 2. Generate 70 Projects
     const projects = [];

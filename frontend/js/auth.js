@@ -37,37 +37,7 @@ if (studentLoginForm) {
     });
 }
 
-// Admin Login logic
-if (adminLoginForm) {
-    adminLoginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
 
-        try {
-            const res = await fetch(`${getHost()}/api/auth/admin-login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-
-            const data = await res.json();
-            if (res.ok) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('role', 'admin');
-                localStorage.setItem('adminEmail', data.admin.email);
-                
-                showToast('Admin Access Granted! Loading Dashboard...', 'success');
-                setTimeout(() => window.location.href = 'admin.html', 1000);
-            } else {
-                showToast(data.message || 'Invalid admin credentials', 'error');
-            }
-        } catch (err) {
-            console.error('Fetch Error:', err);
-            showToast('Server connection failed.', 'error');
-        }
-    });
-}
 
 // Reuse main.js utility since it might not be loaded in these login pages yet
 function showToast(message, type = 'success') {

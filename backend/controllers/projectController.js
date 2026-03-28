@@ -19,36 +19,7 @@ exports.getProjectById = async (req, res) => {
   }
 };
 
-exports.addProject = async (req, res) => {
-  const { title, description, teamName } = req.body;
-  if (!title || !description || !teamName) return res.status(400).json({ message: 'All project fields required' });
 
-  try {
-    const newProject = new Project({ title, description, teamName });
-    await newProject.save();
-    res.status(201).json(newProject);
-  } catch (err) {
-    res.status(500).json({ message: 'Error adding project' });
-  }
-};
-
-exports.updateProject = async (req, res) => {
-  try {
-    const updated = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updated);
-  } catch (err) {
-    res.status(500).json({ message: 'Error updating project' });
-  }
-};
-
-exports.deleteProject = async (req, res) => {
-  try {
-    await Project.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Project deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ message: 'Error deleting project' });
-  }
-};
 
 exports.getLeaderboard = async (req, res) => {
   try {

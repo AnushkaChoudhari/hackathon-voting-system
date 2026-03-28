@@ -29,16 +29,7 @@ function checkStudentAuth() {
     return token;
 }
 
-// Check logged in status for admins
-function checkAdminAuth() {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
-    
-    if (!token || role !== 'admin') {
-        window.location.href = 'admin-login.html';
-    }
-    return token;
-}
+
 
 // Handle Logout
 const logoutBtn = document.getElementById('logout-btn');
@@ -53,4 +44,4 @@ if (logoutBtn) {
 window.showToast = showToast;
 window.API_BASE = API_BASE;
 window.checkStudentAuth = checkStudentAuth;
-window.checkAdminAuth = checkAdminAuth;
+window.checkStudentAuth = checkStudentAuth;
