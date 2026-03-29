@@ -126,6 +126,41 @@
         .logout-btn:hover {
             background: #fecdd3;
         }
+        
+        /* Search Bar Styles */
+        .search-container {
+            margin: 0 auto 40px;
+            max-width: 600px;
+            position: relative;
+        }
+        .search-container i {
+            position: absolute;
+            left: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 65px !important;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: white;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-main);
+            box-shadow: var(--surface-shadow);
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body class="staggered-entry">
@@ -156,7 +191,16 @@
 
         <!-- Projects Section -->
         <section>
-            <h2 class="section-title gradient-text">Hackathon Projects</h2>
+            <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                <h2 class="section-title gradient-text">Hackathon Projects</h2>
+                
+                <!-- Search Bar Added -->
+                <div class="search-container" style="width: 100%; margin-bottom: 40px;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-projects" class="search-input" placeholder="Search by team name..." oninput="filterTeams()">
+                </div>
+            </div>
+            
             <div id="projectsContainer">
                 <!-- Projects will be dynamically loaded here by loadProjects() -->
             </div>

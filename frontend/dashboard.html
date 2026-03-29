@@ -45,13 +45,13 @@
             <div class="staggered-entry" style="display: flex; justify-content: center; animation-delay: 0.2s;">
                 <div class="search-wrapper">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="search-projects" placeholder="Search by project name or team...">
+                    <input type="text" id="search-projects" placeholder="Search by team name..." oninput="filterTeams()">
                 </div>
             </div>
         </header>
 
         <main>
-            <div id="projects-grid" class="projects-grid">
+            <div id="projectsContainer" class="projects-grid">
                 <!-- Project cards will be injected here by dashboard.js -->
                 <div class="loader-container">
                     <div class="complex-loader"></div>
@@ -61,6 +61,7 @@
         </main>
     </div>
 
+    <script src="js/main.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>
