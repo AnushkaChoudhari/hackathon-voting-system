@@ -25,7 +25,11 @@
             <form id="student-login-form" onsubmit="loginStudent(event)">
                 <div class="form-group">
                     <label for="prn">PRN NUMBER</label>
-                    <input type="text" id="prn" name="prn" placeholder="e.g. 21200123" required autocomplete="off" style="font-size: 1.1rem; padding: 15px;">
+                    <input type="text" id="prn" name="prn" placeholder="e.g. 67548378A" required autocomplete="off" 
+                        pattern="^\d{8}[A-Za-z]$" maxlength="9"
+                        title="PRN must be 8 digits followed by 1 letter (e.g. 67548378A)"
+                        oninput="this.value = this.value.toUpperCase(); if(typeof validateField === 'function') validateField(this)"
+                        style="font-size: 1.1rem; padding: 15px;">
                 </div>
                 
                 <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 15px; margin-top: 10px;">Login & Continue &rarr;</button>

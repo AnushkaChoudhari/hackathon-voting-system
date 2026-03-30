@@ -142,12 +142,13 @@
 
                 <div class="form-group">
                     <label for="prn">PRN Number</label>
-                    <input type="text" id="prn" name="prn" placeholder="e.g. 72315270A" 
-                        pattern="^\d{8}[A-Za-z]$" maxlength="9" 
+                    <input type="text" id="prn" name="prn" placeholder="e.g. 67548378A" 
+                        pattern="^\d{8}[A-Za-z]$" maxlength="9" required autocomplete="off"
+                        title="PRN must be exactly 8 digits followed by 1 alphabet (e.g. 67548378A)"
                         oninput="this.value = this.value.toUpperCase(); validateField(this)">
                     <div id="error-prn" class="error-message">Format: 8 digits followed by 1 alphabet</div>
                     <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">
-                        <i class="fas fa-circle-info"></i> Must be 8 numbers & 1 letter (e.g. 12345678A)
+                        <i class="fas fa-circle-info"></i> Must be 8 numbers & 1 letter (e.g. 67548378A)
                     </p>
                 </div>
 

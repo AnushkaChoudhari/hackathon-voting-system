@@ -20,8 +20,15 @@ function showToast(message, type = 'success') {
 
 // 🛡️ PRN VALIDATION (8 Digits + 1 Alphabet)
 function validatePRN(prn) {
+    if (!prn) return false;
     const prnRegex = /^\d{8}[A-Za-z]$/;
-    return prnRegex.test(prn);
+    const isValid = prnRegex.test(prn.trim());
+    
+    if (!isValid) {
+        console.error("PRN Validation Failed:", prn);
+        alert("CRITICAL ERROR: Invalid PRN Number!\n\nFormat must be: 8 NUMBERS followed by 1 ALPHABET\nExample: 67548378A\n\nYou typed: " + prn);
+    }
+    return isValid;
 }
 
 // 📧 SEND OTP FLOW
@@ -72,19 +79,24 @@ async function sendOtp() {
 async function signupStudent(event) {
     if (event) event.preventDefault();
     
-    const prn = document.getElementById('prn').value.trim();
-    if (!validatePRN(prn)) {
-        return showToast("Invalid PRN format! (e.g. 72315270A)", "error");
+    const prnInput = document.getElementById('prn');
+    const prnValue = prnInput ? prnInput.value.trim() : "";
+    
+    if (!validatePRN(prnValue)) {
+        return; 
     }
 
-    if (!isOtpSent) return showToast("Please verify OTP first!", "error");
+    if (!isOtpSent) {
+        alert("Please verify your OTP first!");
+        return showToast("Please verify OTP first!", "error");
+    }
 
     const payload = {
         action: "signup",
         name: document.getElementById('fullName').value.trim(),
         branch: document.getElementById('branch').value.trim(),
         year: document.getElementById('year').value.trim(),
-        prn: prn.toUpperCase(), // Store in uppercase for consistency
+        prn: prnValue.toUpperCase(),
         email: document.getElementById('email').value.trim(),
         otp: document.getElementById('otp-input').value.trim()
     };
@@ -101,6 +113,7 @@ async function signupStudent(event) {
             setTimeout(() => window.location.href = '../login.html', 1500);
         } else {
             showToast(data.message, "error");
+            alert("Registration Failed: " + data.message);
         }
     } catch (err) {
         showToast("Signup failed. Server error.", "error");
