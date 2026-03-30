@@ -141,8 +141,14 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="prn">Set PRN Password</label>
-                    <input type="password" id="prn" name="prn" placeholder="Enter your PRN number">
+                    <label for="prn">PRN Number</label>
+                    <input type="text" id="prn" name="prn" placeholder="e.g. 72315270A" 
+                        pattern="^\d{8}[A-Za-z]$" maxlength="9" 
+                        oninput="this.value = this.value.toUpperCase(); validateField(this)">
+                    <div id="error-prn" class="error-message">Format: 8 digits followed by 1 alphabet</div>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">
+                        <i class="fas fa-circle-info"></i> Must be 8 numbers & 1 letter (e.g. 12345678A)
+                    </p>
                 </div>
 
                 <button type="submit" id="signup-submit-btn" class="btn btn-primary" disabled>
@@ -163,6 +169,21 @@
     <!-- Scripts -->
     <script src="../js/main.js"></script>
     <script src="../js/auth.js"></script>
+    <script>
+        function validateField(input) {
+            const errorDiv = document.getElementById('error-' + input.id);
+            if (input.id === 'prn') {
+                const isValid = /^\d{8}[A-Za-z]$/.test(input.value);
+                if (input.value && !isValid) {
+                    errorDiv.style.display = 'block';
+                    input.style.borderColor = 'var(--danger)';
+                } else {
+                    errorDiv.style.display = 'none';
+                    input.style.borderColor = isValid ? 'var(--success, #22c55e)' : 'var(--border-color)';
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

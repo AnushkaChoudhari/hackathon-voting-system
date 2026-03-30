@@ -69,6 +69,13 @@ function handleSignup(user) {
   );
 
   if (!validOtp) return createResponse({ status: "error", message: "Invalid or expired OTP" });
+  
+  // Backend PRN Validation (8 Digits + 1 Alphabet)
+  const prnRegex = /^\d{8}[A-Za-z]$/;
+  const prn = user.prn ? user.prn.toString().trim() : "";
+  if (!prnRegex.test(prn)) {
+    return createResponse({ status: "error", message: "Invalid PRN format. Must be 8 digits followed by 1 alphabet." });
+  }
 
   // Check if PRN or Email exists
   const users = userSheet.getDataRange().getValues();
@@ -84,6 +91,13 @@ function handleSignup(user) {
 // 🔑 3. LOGIN
 function handleLogin(prn) {
   const userSheet = ss.getSheetByName("Users") || ss.insertSheet("Users");
+  
+  // Backend PRN Validation
+  const prnRegex = /^\d{8}[A-Za-z]$/;
+  if (!prnRegex.test(prn.toString().trim())) {
+    return createResponse({ status: "error", message: "Invalid PRN format. Please check and try again." });
+  }
+
   const data = userSheet.getDataRange().getValues();
   const user = data.find(row => row[0].toString() === prn.toString());
 

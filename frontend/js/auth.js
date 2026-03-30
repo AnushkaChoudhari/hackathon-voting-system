@@ -1,5 +1,5 @@
 // 🗳️ HACKVOTE AUTH LOGIC (Google Apps Script Version)
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz8R7p-ktGo-l5aAwC-GlkZTmWXqa68IzE_tOj7fjAfBkvYzibPbiRP2lx9NhtT85fz7w/exec"; // Update this with your deployed URL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyfL-ANFGJGF7O8ZpFrDSoa_Wmj6Kyy39DzbSEv1tQvx_BCXCj61MwgWezmCFWAFLva9Q/exec"; // Update this with your deployed URL
 
 // Multi-step signup state
 let isOtpSent = false;
@@ -18,10 +18,30 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
+// 🛡️ PRN VALIDATION (8 Digits + 1 Alphabet)
+function validatePRN(prn) {
+    const prnRegex = /^\d{8}[A-Za-z]$/;
+    return prnRegex.test(prn);
+}
+
 // 📧 SEND OTP FLOW
 async function sendOtp() {
     const email = document.getElementById('email').value.trim();
     if (!email) return showToast("Email is required!", "error");
+    
+    // Check if other fields are filled before sending OTP to prevent empty signups
+    const name = document.getElementById('fullName').value.trim();
+    const branch = document.getElementById('branch').value;
+    const year = document.getElementById('year').value;
+    const prn = document.getElementById('prn').value.trim();
+
+    if (!name || !branch || !year || !prn) {
+        return showToast("Please fill all fields before sending OTP!", "error");
+    }
+
+    if (!validatePRN(prn)) {
+        return showToast("Invalid PRN! Format: 8 numbers + 1 alphabet (e.g. 72315270A)", "error");
+    }
     
     const sendBtn = document.getElementById('send-otp-btn');
     if(sendBtn) sendBtn.innerText = "Sending...";
@@ -51,6 +71,12 @@ async function sendOtp() {
 // 👤 STUDENT SIGNUP
 async function signupStudent(event) {
     if (event) event.preventDefault();
+    
+    const prn = document.getElementById('prn').value.trim();
+    if (!validatePRN(prn)) {
+        return showToast("Invalid PRN format! (e.g. 72315270A)", "error");
+    }
+
     if (!isOtpSent) return showToast("Please verify OTP first!", "error");
 
     const payload = {
@@ -58,7 +84,7 @@ async function signupStudent(event) {
         name: document.getElementById('fullName').value.trim(),
         branch: document.getElementById('branch').value.trim(),
         year: document.getElementById('year').value.trim(),
-        prn: document.getElementById('prn').value.trim(),
+        prn: prn.toUpperCase(), // Store in uppercase for consistency
         email: document.getElementById('email').value.trim(),
         otp: document.getElementById('otp-input').value.trim()
     };
@@ -88,10 +114,14 @@ async function loginStudent(event) {
     if(!prnEl) return;
     const prn = prnEl.value.trim();
 
+    if (!validatePRN(prn)) {
+        return showToast("Invalid PRN format! (e.g. 72315270A)", "error");
+    }
+
     try {
         const res = await fetch(GAS_URL, {
             method: 'POST',
-            body: JSON.stringify({ action: "login", prn: prn })
+            body: JSON.stringify({ action: "login", prn: prn.toUpperCase() })
         });
         const data = await res.json();
 
@@ -116,3 +146,4 @@ async function loginStudent(event) {
 window.sendOtp = sendOtp;
 window.signupStudent = signupStudent;
 window.loginStudent = loginStudent;
+window.validatePRN = validatePRN;
