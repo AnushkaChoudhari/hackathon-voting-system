@@ -161,6 +161,46 @@
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
             transform: translateY(-2px);
         }
+
+        /* Voting Progress Tracker Styles */
+        .progress-container-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            margin-bottom: 40px;
+            box-shadow: var(--surface-shadow);
+            width: 100%;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .voting-progress-bar {
+            height: 12px;
+            width: 100%;
+            background: #f1f5f9;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
+        }
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .progress-percent {
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--primary);
+        }
     </style>
 </head>
 <body class="staggered-entry">
@@ -198,6 +238,20 @@
                 <div class="search-container" style="width: 100%; margin-bottom: 40px;">
                     <i class="fas fa-search"></i>
                     <input type="text" id="search-projects" class="search-input" placeholder="Search by team name..." oninput="filterTeams()">
+                </div>
+
+                <!-- Voting Progress Tracker -->
+                <div class="progress-container-card">
+                    <h3 style="margin-bottom: 15px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.7; text-align: left;">Voting Progress</h3>
+                    
+                    <div class="progress-stats">
+                        <p id="progress-text" style="color: var(--text-muted); font-size: 1rem; font-weight: 600; margin: 0;">You have voted for 0 / 0 teams</p>
+                        <div class="progress-percent" id="progress-percent-text">0%</div>
+                    </div>
+
+                    <div class="voting-progress-bar">
+                        <div id="progress-indicator" class="progress-fill"></div>
+                    </div>
                 </div>
             </div>
             

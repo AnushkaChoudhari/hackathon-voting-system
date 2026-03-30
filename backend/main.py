@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from auth import router as auth_router
 from teams import router as teams_router
+from admin_auth import router as admin_auth_router
+from admin_dashboard import router as dashboard_router
 
 app = FastAPI()
 
@@ -18,6 +20,8 @@ app.add_middleware(
 # Include the router from auth.py
 app.include_router(auth_router)
 app.include_router(teams_router)
+app.include_router(admin_auth_router)
+app.include_router(dashboard_router)
 
 # Root route
 @app.get("/")

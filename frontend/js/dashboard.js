@@ -59,7 +59,8 @@ async function loadTeams() {
             });
             
             // Update progress text
-            updateProgress(teams.length);
+            totalTeamsCount = teams.length;
+            setTimeout(() => updateVoteProgress(totalTeamsCount), 100);
         } else {
             showToast("Failed to load teams. Please try again.", "error");
         }
@@ -126,6 +127,7 @@ function createProjectCard(team) {
 
 // Global variable to keep track of temporary selections before submission
 const selections = {};
+let totalTeamsCount = 0; // Store total teams for progress tracking
 
 /**
  * Handles visual selection of a rating before submission
@@ -202,7 +204,7 @@ async function submitVote(teamId, rating) {
             applyVotedState(teamId);
             
             // Update progress (re-calculate based on storage)
-            updateVotingProgress();
+            updateVoteProgress();
         } else {
             showToast(result.message || "Failed to submit vote.", "error");
         }
@@ -246,43 +248,57 @@ function applyVotedState(teamId) {
 
 /**
  * Updates the progress bar and stats
+ * This function calculates votes completed, updates progress text, and adjusts progress bar width
  */
-function updateProgress(totalTeams) {
-    const totalVoted = Object.keys(localStorage).filter(k => k.startsWith('voted_')).length;
+async function updateVoteProgress(countFromAPI = null) {
+    let totalTeams = countFromAPI || totalTeamsCount;
+
+    // If total count is still 0/null, fetch it from API or use current cards
+    if (!totalTeams) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/teams`);
+            const data = await response.json();
+            if (data.status === "success") {
+                totalTeams = data.teams.length;
+                totalTeamsCount = totalTeams; // Cache it
+            } else {
+                totalTeams = document.querySelectorAll('.project-card').length;
+            }
+        } catch (error) {
+            totalTeams = document.querySelectorAll('.project-card').length;
+        }
+    }
+
+    // Determine how many projects the student has voted for
+    // Counts cards that have the 'voted' class (which implies they show "Voted: ..." or buttons are disabled)
+    const votedTeamsCount = document.querySelectorAll('.project-card.voted').length;
+    
     const progressText = document.getElementById('progress-text');
     const progressBar = document.getElementById('progress-indicator');
     const progressPercentText = document.getElementById('progress-percent-text');
     
+    // Update progress text format: "You have voted for X / TOTAL teams"
     if (progressText) {
-        progressText.innerText = `${totalVoted} / ${totalTeams} projects voted`;
+        progressText.innerText = `You have voted for ${votedTeamsCount} / ${totalTeams} teams`;
     }
     
+    // Adjust progress bar width with smooth animation
     if (progressBar && totalTeams > 0) {
-        const percent = (totalVoted / totalTeams) * 100;
+        const percent = (votedTeamsCount / totalTeams) * 100;
         progressBar.style.width = `${percent}%`;
         if (progressPercentText) progressPercentText.innerText = `${Math.round(percent)}%`;
     }
 }
 
 /**
- * Recalculates progress (called after a new vote)
- */
-function updateVotingProgress() {
-    fetch(`${API_BASE_URL}/teams`)
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === "success") {
-                updateProgress(data.teams.length);
-            }
-        });
-}
-
-/**
  * Renders state for saved votes from localStorage
  */
 function renderSavedVotes() {
-    // This is handled by child elements on creation, but we can trigger progress update
-    updateVotingProgress();
+    // We already handle card-specific states in createProjectCard
+    // This call ensures the progress tracker is consistent with the cards
+    setTimeout(() => {
+        updateVoteProgress();
+    }, 100);
 }
 
 /**

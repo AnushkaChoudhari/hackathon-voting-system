@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Intelligence Dashboard | HACKVOTE</title>
+    <link rel="stylesheet" href="admin-dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Top Navbar -->
+    <nav>
+        <div class="logo-container">
+            <span class="gradient-text" style="font-size: 1.4rem; letter-spacing: -0.02em;">ADMIN CONSOLE</span>
+            <span class="admin-badge">V2.4.0</span>
+        </div>
+        <button id="logoutBtn" class="btn btn-logout">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Header Section -->
+        <header class="header-section animate-fade">
+            <h1 class="gradient-text">Intelligence Dashboard</h1>
+            <p>Monitoring real-time voting engagement across all hackathon participants.</p>
+        </header>
+
+        <!-- Statistics Cards Section -->
+        <section class="stats-grid">
+            <div class="stat-card animate-fade" style="animation-delay: 0.1s;">
+                <div class="stat-icon" style="background: #e0e7ff; color: #6366f1;">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="stat-number" id="totalProjects">70</div>
+                <div class="stat-label">Total Projects</div>
+            </div>
+
+            <div class="stat-card animate-fade" style="animation-delay: 0.2s;">
+                <div class="stat-icon" style="background: #fdf4ff; color: #a855f7;">
+                    <i class="fas fa-vote-yea"></i>
+                </div>
+                <div class="stat-number" id="totalVotes">694</div>
+                <div class="stat-label">Total Votes Cast</div>
+            </div>
+
+            <div class="stat-card animate-fade" style="animation-delay: 0.3s;">
+                <div class="stat-icon" style="background: #ecfdf5; color: #10b981;">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="stat-number" id="bestVotes">148</div>
+                <div class="stat-label">Best Votes</div>
+            </div>
+
+            <div class="stat-card animate-fade" style="animation-delay: 0.4s;">
+                <div class="stat-icon" style="background: #eff6ff; color: #3b82f6;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number" id="studentsVoted">240</div>
+                <div class="stat-label">Students Voted</div>
+            </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section class="analytics-section">
+            <!-- Left Panel: Voting Mix -->
+            <div class="panel animate-fade" style="animation-delay: 0.5s;">
+                <div class="panel-title">
+                    <i class="fas fa-chart-pie" style="color: var(--primary);"></i>
+                    Voting Mix
+                </div>
+                <div class="voting-mix-chart" style="height:300px; position:relative;">
+                    <canvas id="voteChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Right Panel: Elite Top 5 -->
+            <div class="panel animate-fade" style="animation-delay: 0.6s;">
+                <div class="panel-title">
+                    <i class="fas fa-trophy" style="color: #f59e0b;"></i>
+                    Elite Top 5
+                </div>
+                <div class="leaderboard-list" id="leaderboardList">
+                    <div class="leaderboard-item">
+                        <div class="team-info">
+                            <span class="rank">#1</span>
+                            <span class="project-name">Smart Campus AI</span>
+                        </div>
+                        <span class="votes-badge">145 Best</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="team-info">
+                            <span class="rank">#2</span>
+                            <span class="project-name">EcoTrack IoT</span>
+                        </div>
+                        <span class="votes-badge">132 Best</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="team-info">
+                            <span class="rank">#3</span>
+                            <span class="project-name">HealthLink Pro</span>
+                        </div>
+                        <span class="votes-badge">118 Best</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="team-info">
+                            <span class="rank">#4</span>
+                            <span class="project-name">FinSafe Wallet</span>
+                        </div>
+                        <span class="votes-badge">112 Best</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <div class="team-info">
+                            <span class="rank">#5</span>
+                            <span class="project-name">EduSim VR</span>
+                        </div>
+                        <span class="votes-badge">98 Best</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Management Table Section -->
+        <section class="table-container animate-fade" style="animation-delay: 0.7s;">
+            <div class="table-header">
+                <h2 style="font-size: 1.5rem; font-weight: 800;">Project Management</h2>
+                <button class="btn btn-add">
+                    <i class="fas fa-plus"></i> Add Entry
+                </button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">Project & Team</th>
+                        <th>Best</th>
+                        <th>Good</th>
+                        <th>Moderate</th>
+                        <th>Total</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="projectTableBody">
+                    <tr>
+                        <td>
+                            <div class="project-cell">
+                                <span class="project-name">Neural Stream Analysis</span>
+                                <span class="team-name">Team Brainwave</span>
+                            </div>
+                        </td>
+                        <td>42</td>
+                        <td>18</td>
+                        <td>12</td>
+                        <td style="font-weight: 700;">72</td>
+                        <td>
+                            <div class="action-btns" style="justify-content: flex-end;">
+                                <button class="btn btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-icon btn-delete"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="project-cell">
+                                <span class="project-name">Quantum Ledger</span>
+                                <span class="team-name">Team Qubit</span>
+                            </div>
+                        </td>
+                        <td>38</td>
+                        <td>25</td>
+                        <td>8</td>
+                        <td style="font-weight: 700;">71</td>
+                        <td>
+                            <div class="action-btns" style="justify-content: flex-end;">
+                                <button class="btn btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-icon btn-delete"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="project-cell">
+                                <span class="project-name">SwiftSupply Chain</span>
+                                <span class="team-name">Logistics Hub</span>
+                            </div>
+                        </td>
+                        <td>32</td>
+                        <td>35</td>
+                        <td>15</td>
+                        <td style="font-weight: 700;">82</td>
+                        <td>
+                            <div class="action-btns" style="justify-content: flex-end;">
+                                <button class="btn btn-icon btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-icon btn-delete"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Live Voting Activity Feed -->
+        <section class="panel animate-fade" style="margin-top: 40px; animation-delay: 0.8s;">
+            <div class="panel-title">
+                <i class="fas fa-bolt" style="color: #fce7f3;"></i>
+                Live Voting Activity
+            </div>
+            <div id="liveVotes" class="live-activity-list" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Activity entries will be injected here -->
+                <p style="color: var(--text-muted); font-style: italic;">Monitoring live votes...</p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modals Placeholder -->
+    <div id="modalOverlay" class="modal-overlay"></div>
+
+    <script src="admin-dashboard.js"></script>
+</body>
+
+</html>
