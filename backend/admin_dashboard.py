@@ -1,7 +1,16 @@
 import pandas as pd
 from fastapi import APIRouter
 import os
+from pydantic import BaseModel
+from typing import Optional
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+class Team(BaseModel):
+    team_id: int
+    team_name: str
+    idea_title: str
+    theme: str
 
 router = APIRouter()
 
@@ -11,6 +20,7 @@ def dashboard_stats():
     votes = pd.read_csv(os.path.join(BASE_DIR, "database", "votes.csv"))
     teams = pd.read_csv(os.path.join(BASE_DIR, "database", "teams.csv"))
 
+    votes["rating"] = votes["rating"].str.lower()
     total_projects = len(teams)
     total_votes = len(votes)
 
@@ -30,6 +40,7 @@ def voting_mix():
 
     votes = pd.read_csv(os.path.join(BASE_DIR, "database", "votes.csv"))
 
+    votes["rating"] = votes["rating"].str.lower()
     mix = votes["rating"].value_counts()
 
     return {
@@ -44,6 +55,7 @@ def leaderboard():
     votes = pd.read_csv(os.path.join(BASE_DIR, "database", "votes.csv"))
     teams = pd.read_csv(os.path.join(BASE_DIR, "database", "teams.csv"))
 
+    votes["rating"] = votes["rating"].str.lower()
     vote_counts = votes.groupby("team_id").size().reset_index(name="votes")
 
     leaderboard = teams.merge(vote_counts, on="team_id")
@@ -55,8 +67,8 @@ def leaderboard():
 @router.get("/admin/project-stats")
 def project_stats():
 
-    votes = pd.read_csv("database/votes.csv")
-    teams = pd.read_csv("database/teams.csv")
+    votes = pd.read_csv(os.path.join(BASE_DIR, "database", "votes.csv"))
+    teams = pd.read_csv(os.path.join(BASE_DIR, "database", "teams.csv"))
 
     # normalize rating text
     votes["rating"] = votes["rating"].str.lower()
@@ -80,7 +92,59 @@ def project_stats():
 def live_votes():
 
     votes = pd.read_csv(os.path.join(BASE_DIR, "database", "votes.csv"))
-
+    votes["rating"] = votes["rating"].str.lower()
     recent_votes = votes.tail(10)
 
     return recent_votes.to_dict(orient="records")
+@router.post("/admin/teams")
+def add_team(team: Team):
+    teams_path = os.path.join(BASE_DIR, "database", "teams.csv")
+    teams = pd.read_csv(teams_path)
+
+    if team.team_id in teams["team_id"].values:
+        return {"error": "Team ID already exists"}
+
+    new_row = {
+        "team_id": team.team_id,
+        "team_name": team.team_name,
+        "idea_title": team.idea_title,
+        "theme": team.theme
+    }
+
+    teams = pd.concat([teams, pd.DataFrame([new_row])], ignore_index=True)
+    teams.to_csv(teams_path, index=False)
+
+    return {"message": "Team added successfully"}
+
+@router.put("/admin/teams/{team_id}")
+def update_team(team_id: int, team: Team):
+    teams_path = os.path.join(BASE_DIR, "database", "teams.csv")
+    teams = pd.read_csv(teams_path)
+
+    if team_id not in teams["team_id"].values:
+        return {"error": "Team not found"}
+
+    teams.loc[teams["team_id"] == team_id, ["team_name", "idea_title", "theme"]] = [
+        team.team_name, team.idea_title, team.theme
+    ]
+
+    # Also update team_id if it changed?
+    # For now keep it simple, team_id is the primary key.
+    if team.team_id != team_id:
+        teams.loc[teams["team_id"] == team_id, "team_id"] = team.team_id
+
+    teams.to_csv(teams_path, index=False)
+    return {"message": "Team updated successfully"}
+
+@router.delete("/admin/teams/{team_id}")
+def delete_team(team_id: int):
+    teams_path = os.path.join(BASE_DIR, "database", "teams.csv")
+    teams = pd.read_csv(teams_path)
+
+    if team_id not in teams["team_id"].values:
+        return {"error": "Team not found"}
+
+    teams = teams[teams["team_id"] != team_id]
+    teams.to_csv(teams_path, index=False)
+
+    return {"message": "Team deleted successfully"}
