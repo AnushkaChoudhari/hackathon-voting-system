@@ -177,12 +177,18 @@ function applyVotedState(id) {
 
 function updateProgress(total) {
     const votedList = JSON.parse(localStorage.getItem('voted_list') || "[]");
-    const progressText = document.getElementById('progress-text');
-    if (progressText) progressText.innerText = `${votedList.length} / ${total} Projects Voted`;
+    const count = votedList.length;
     
-    const progressBar = document.getElementById('progress-indicator');
-    if (progressBar && total > 0) {
-        progressBar.style.width = `${(votedList.length / total) * 100}%`;
+    const infoText = document.getElementById('progressInfoText');
+    const percentText = document.getElementById('progressPercentText');
+    const progressBar = document.getElementById('progressBarFill');
+    
+    if (infoText) infoText.innerText = `You have voted for ${count} / ${total} teams`;
+    
+    if (total > 0) {
+        const percentage = Math.round((count / total) * 100);
+        if (percentText) percentText.innerText = `${percentage}%`;
+        if (progressBar) progressBar.style.width = `${percentage}%`;
     }
 }
 
