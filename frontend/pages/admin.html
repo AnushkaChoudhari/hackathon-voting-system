@@ -36,12 +36,36 @@
             top: 0;
             border-right: 1px solid #e2e8f0;
             z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        /* Override global nav styles for sidebar */
+        aside nav {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            position: relative !important;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
         }
 
         .admin-main {
             margin-left: var(--sidebar-width);
             padding: 40px 5%;
             min-height: 100vh;
+            background: #f8faff;
         }
 
         .dashboard-header {
@@ -246,6 +270,11 @@
             padding: 18px 24px;
             border-bottom: 1px solid #f1f5f9;
             vertical-align: middle;
+            transition: background 0.2s;
+        }
+
+        .project-table tbody tr:hover td {
+            background: #f8fbff;
         }
 
         .p-title {
@@ -261,12 +290,44 @@
         }
 
         .total-badge {
-            background: #ede9fe;
-            color: #7c3aed;
-            padding: 4px 12px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+            color: #4f46e5;
+            padding: 6px 12px;
+            border-radius: 10px;
             font-weight: 800;
             font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #64748b;
+        }
+
+        .action-btn.edit:hover {
+            background: #f0f4ff;
+            color: #6366f1;
+            border-color: #6366f1;
+            transform: scale(1.1);
+        }
+
+        .action-btn.delete:hover {
+            background: #fef2f2;
+            color: #ef4444;
+            border-color: #ef4444;
+            transform: scale(1.1);
         }
 
         .btn-refresh {
@@ -277,7 +338,7 @@
             border-radius: 12px;
             font-weight: 700;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -286,6 +347,8 @@
         .btn-refresh:hover {
             background: #f5f7ff;
             border-color: #6366f1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
         }
 
         .sidebar-btn {
@@ -326,18 +389,26 @@
 
 <body>
     <aside class="admin-sidebar">
-        <div style="margin-bottom: 48px;">
-            <h1 class="gradient-text" style="font-size: 1.8rem; font-weight: 900;">ADMIN</h1>
+        <div class="sidebar-top">
+            <div style="margin-bottom: 48px;">
+                <h1 class="gradient-text" style="font-size: 1.8rem; font-weight: 900;">ADMIN</h1>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="sidebar-btn active">
+                    <i class="fas fa-chart-line"></i> Intelligence
+                </button>
+                <button class="sidebar-btn" onclick="loadAdminData()">
+                    <i class="fas fa-sync-alt"></i> Sync Data
+                </button>
+            </nav>
         </div>
 
-        <nav>
-            <button class="sidebar-btn active">
-                <i class="fas fa-chart-line"></i> Intelligence
+        <div class="sidebar-bottom">
+            <button class="sidebar-btn" onclick="logoutAdmin()" style="color: #ef4444; background: #fef2f2; border: 1px solid #fee2e2;">
+                <i class="fas fa-sign-out-alt"></i> Logout Session
             </button>
-            <button class="sidebar-btn" onclick="logoutAdmin()">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-        </nav>
+        </div>
     </aside>
 
     <main class="admin-main">
@@ -505,16 +576,16 @@
                     <td><b style="color: #6366f1">${p.bestCount}</b></td>
                     <td><b style="color: #10b981">${p.goodCount}</b></td>
                     <td><b style="color: #f59e0b">${p.moderateCount}</b></td>
-                    <td><span class="total-badge">${p.totalVotes} Total</span></td>
-                    <td style="display: flex; gap: 8px;">
-                        <button onclick="openTeamModal('${p.id}', '${p.title.replace(/'/g, "\\'")}', '${p.teamName.replace(/'/g, "\\'")}')" 
-                                style="padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b; cursor: pointer;">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button onclick="deleteTeam('${p.id}')" 
-                                style="padding: 8px; border-radius: 8px; border: 1px solid #fee2e2; background: #fef2f2; color: #ef4444; cursor: pointer;">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                    <td><span class="total-badge">${p.totalVotes}</span></td>
+                    <td>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="action-btn edit" onclick="openTeamModal('${p.id}', '${p.title.replace(/'/g, "\\'")}', '${p.teamName.replace(/'/g, "\\'")}')" title="Edit Team">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete" onclick="deleteTeam('${p.id}')" title="Delete Team">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
