@@ -26,7 +26,7 @@ function validatePRN(prn) {
     
     if (!isValid) {
         console.error("PRN Validation Failed:", prn);
-        alert("CRITICAL ERROR: Invalid PRN Number!\n\nFormat must be: 8 NUMBERS followed by 1 ALPHABET\nExample: 67548378A\n\nYou typed: " + prn);
+        alert("Verification Error: The PRN provided is not in the correct format. Please double-check your official ID.");
     }
     return isValid;
 }
@@ -47,7 +47,7 @@ async function sendOtp() {
     }
 
     if (!validatePRN(prn)) {
-        return showToast("Invalid PRN! Format: 8 numbers + 1 alphabet (e.g. 72315270A)", "error");
+        return showToast("Invalid PRN format. Please check and try again.", "error");
     }
     
     const sendBtn = document.getElementById('send-otp-btn');
@@ -128,7 +128,7 @@ async function loginStudent(event) {
     const prn = prnEl.value.trim();
 
     if (!validatePRN(prn)) {
-        return showToast("Invalid PRN format! (e.g. 72315270A)", "error");
+        return showToast("Invalid PRN format. Please check and try again.", "error");
     }
 
     try {
