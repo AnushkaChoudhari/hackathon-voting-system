@@ -1,5 +1,5 @@
 // 🗳️ HACKVOTE AUTH LOGIC (Google Apps Script Version)
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzDDYVdsnAg_rFDl-ihqhJ_B7FEKhf_rTeZ408nsqcF1t0YdeIJTBcoEb0O9sPwt6ig/exec"; // Update this with your deployed URL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwWBCwtbI3t5xjSljcVoiczdZ1_pWT8aYMxCI2pxc_B9JjZPG7x88IL02D6l54A_8-L5w/exec"; // Update this with your deployed URL
 
 // Multi-step signup state
 let isOtpSent = false;

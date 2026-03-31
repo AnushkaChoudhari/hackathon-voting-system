@@ -1,5 +1,5 @@
 // 🗳️ HACKVOTE DASHBOARD LOGIC (Google Apps Script Version)
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzDDYVdsnAg_rFDl-ihqhJ_B7FEKhf_rTeZ408nsqcF1t0YdeIJTBcoEb0O9sPwt6ig/exec"; // Update this with your deployed URL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwWBCwtbI3t5xjSljcVoiczdZ1_pWT8aYMxCI2pxc_B9JjZPG7x88IL02D6l54A_8-L5w/exec"; // Update this with your deployed URL
 
 document.addEventListener('DOMContentLoaded', () => {
     const studentPRN = localStorage.getItem("student_prn");
@@ -177,18 +177,19 @@ function applyVotedState(id) {
 
 function updateProgress(total) {
     const votedList = JSON.parse(localStorage.getItem('voted_list') || "[]");
-    const count = votedList.length;
+    const progressText = document.getElementById('progress-text');
+    if (progressText) progressText.innerText = `You have voted for ${votedList.length} / ${total} teams`;
     
-    const infoText = document.getElementById('progressInfoText');
-    const percentText = document.getElementById('progressPercentText');
-    const progressBar = document.getElementById('progressBarFill');
+    const percentage = total > 0 ? Math.round((votedList.length / total) * 100) : 0;
     
-    if (infoText) infoText.innerText = `You have voted for ${count} / ${total} teams`;
+    const progressBar = document.getElementById('progress-indicator');
+    if (progressBar) {
+        progressBar.style.width = `${percentage}%`;
+    }
     
-    if (total > 0) {
-        const percentage = Math.round((count / total) * 100);
-        if (percentText) percentText.innerText = `${percentage}%`;
-        if (progressBar) progressBar.style.width = `${percentage}%`;
+    const percentText = document.getElementById('progress-percent-text');
+    if (percentText) {
+        percentText.innerText = `${percentage}%`;
     }
 }
 
