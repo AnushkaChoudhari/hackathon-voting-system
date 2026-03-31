@@ -25,29 +25,51 @@
             </div>
         </nav>
 
-        <header style="margin-bottom: 50px; text-align: center;">
-            <h1 class="gradient-text staggered-entry" style="font-size: 3.5rem; margin-bottom: 10px; font-weight: 900;">Project Showcase</h1>
-            <p class="staggered-entry" style="color: var(--text-muted); font-size: 1.15rem; max-width: 800px; margin: 0 auto; line-height: 1.6; opacity: 0.8;">
-                Welcome to the Hackathon 2026 gallery. Browse 70 innovative solutions and support your favorites.
-            </p>
-            
-            <div class="progress-container-card staggered-entry" style="margin-top: 40px; animation-delay: 0.1s;">
-                <h3 style="margin-bottom: 12px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 800;">Voting Progress</h3>
+        <header style="margin-bottom: 40px;">
+            <!-- Welcome Profile Card -->
+            <div class="profile-card staggered-entry" style="animation-delay: 0.1s;">
+                <div class="user-badge-container">
+                    <div class="user-avatar-placeholder">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="user-profile-details">
+                        <h2 style="font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px;">
+                            Welcome, <span id="display-name" class="gradient-text">Student</span>
+                        </h2>
+                        <div class="student-meta" style="display: flex; gap: 15px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">
+                            <span><i class="fas fa-university" style="margin-right: 6px; opacity: 0.7;"></i><span id="displayBranch">Branch: IT</span></span>
+                            <span><i class="fas fa-calendar-alt" style="margin-right: 6px; opacity: 0.7;"></i><span id="displayYear">Year: Second Year</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Multi-Stat Voting Progress Tracker -->
+            <div class="progress-container-card staggered-entry" style="animation-delay: 0.2s; margin-top: 25px;">
+                <div class="progress-header" style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); font-weight: 800;">Voting Progress</h3>
+                </div>
                 
-                <div class="progress-stats" style="margin-bottom: 8px;">
-                    <p id="progress-text" style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600;">You have voted for 0 / 70 teams</p>
-                    <div class="progress-percent" id="progress-percent-text">0%</div>
+                <div class="progress-stats-row" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
+                    <div class="stat-group">
+                        <p id="progress-text" style="color: var(--text-main); font-size: 1rem; font-weight: 700; margin-bottom: 2px;">You have voted for 0 / 70 teams</p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Support your fellow innovators by casting all votes</p>
+                    </div>
+                    <div class="progress-percent" id="progress-percent-text" style="font-size: 1.5rem; font-weight: 900; color: var(--primary);">0%</div>
                 </div>
 
-                <div class="voting-progress-bar">
-                    <div id="progress-indicator" class="progress-fill"></div>
+                <div class="voting-progress-bar" style="height: 10px; background: #f1f5f9; border-radius: 20px; overflow: hidden;">
+                    <div id="progress-indicator" class="progress-fill" style="width: 0%; height: 100%; border-radius: 20px;"></div>
                 </div>
             </div>
             
-            <div class="staggered-entry" style="display: flex; justify-content: center; animation-delay: 0.2s;">
-                <div class="search-wrapper">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="search-projects" placeholder="Search by team name..." oninput="filterTeams()">
+            <div class="staggered-entry" style="text-align: center; margin-top: 45px; animation-delay: 0.3s;">
+                <h2 style="font-size: 1.8rem; font-weight: 900; color: var(--text-main); margin-bottom: 25px; letter-spacing: -0.02em;">Hackathon Projects</h2>
+                <div style="display: flex; justify-content: center;">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-projects" placeholder="Search by team name..." oninput="filterTeams()">
+                    </div>
                 </div>
             </div>
         </header>
