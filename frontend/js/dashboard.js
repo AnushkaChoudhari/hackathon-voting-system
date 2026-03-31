@@ -1,5 +1,6 @@
 // 🗳️ HACKVOTE DASHBOARD LOGIC (Google Apps Script Version)
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwWBCwtbI3t5xjSljcVoiczdZ1_pWT8aYMxCI2pxc_B9JjZPG7x88IL02D6l54A_8-L5w/exec"; // Update this with your deployed URL
+let totalTeams = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
     const studentPRN = localStorage.getItem("student_prn");
@@ -30,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     loadTeams();
-    updateVotingProgress();
 });
 
 // 📋 LOAD TEAMS FROM GOOGLE SHEETS
@@ -52,6 +52,8 @@ async function loadTeams() {
                 container.innerHTML = `<p style="text-align: center; grid-column: 1/-1; padding: 40px; color: var(--text-muted);">No projects found.</p>`;
                 return;
             }
+            
+            totalTeams = projects.length;
 
             projects.forEach(project => {
                 // Handle different header naming (teamname vs teamName)
@@ -62,7 +64,7 @@ async function loadTeams() {
                 container.appendChild(card);
             });
             
-            updateProgress(projects.length);
+            updateProgress(totalTeams);
         } else {
             showToast("Failed to load projects.", "error");
         }
@@ -154,7 +156,7 @@ async function handleVoteSubmit(id) {
             localStorage.setItem('voted_list', JSON.stringify(votedList));
             
             applyVotedState(id);
-            updateVotingProgress();
+            updateProgress(totalTeams);
         } else {
             showToast(result.message, "error");
         }
@@ -191,14 +193,6 @@ function updateProgress(total) {
     if (percentText) {
         percentText.innerText = `${percentage}%`;
     }
-}
-
-function updateVotingProgress() {
-    fetch(`${GAS_URL}?action=getProjects`)
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === "success") updateProgress(data.projects.length);
-        });
 }
 
 function showToast(message, type = 'success') {
