@@ -16,6 +16,11 @@ function doPost(e) {
     if (action === "login") return handleLogin(data.prn);
     if (action === "vote") return handleVote(data.prn, data.projectId, data.voteType);
     if (action === "adminStats") return handleAdminStats();
+    
+    // Admin CRUD Actions
+    if (action === "addTeam") return handleAddTeam(data.team);
+    if (action === "updateTeam") return handleUpdateTeam(data.id, data.team);
+    if (action === "deleteTeam") return handleDeleteTeam(data.id);
 
     return createResponse({ status: "error", message: "Unknown action: " + action });
   } catch (err) {
@@ -212,4 +217,65 @@ function handleAdminStats() {
 
 function createResponse(data) {
   return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+}
+
+// 🛠️ 7. ADMIN CRUD OPERATIONS
+function handleAddTeam(team) {
+  const sheet = ss.getSheetByName("Projects") || ss.insertSheet("Projects");
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  
+  // Find project with highest ID
+  let maxId = 0;
+  if(data.length > 1) {
+    for(let i=1; i<data.length; i++) {
+      let idNum = parseInt(data[i][0]);
+      if(!isNaN(idNum) && idNum > maxId) maxId = idNum;
+    }
+  }
+  const nextId = (maxId + 1).toString();
+  
+  const newRow = headers.map(h => {
+    if (h === "id") return nextId;
+    if (h === "title") return team.title || "";
+    if (h === "teamName") return team.teamName || "";
+    if (h === "theme") return team.theme || "General";
+    if (h === "votesCount") return 0;
+    return "";
+  });
+  
+  sheet.appendRow(newRow);
+  return createResponse({ status: "success", message: "Team Added Successfully!", id: nextId });
+}
+
+function handleUpdateTeam(id, teamData) {
+  const sheet = ss.getSheetByName("Projects");
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0].toString() === id.toString()) {
+      const rowNum = i + 1;
+      headers.forEach((h, j) => {
+        if (h === "title") sheet.getRange(rowNum, j + 1).setValue(teamData.title);
+        if (h === "teamName") sheet.getRange(rowNum, j + 1).setValue(teamData.teamName);
+        if (h === "theme") sheet.getRange(rowNum, j + 1).setValue(teamData.theme);
+      });
+      return createResponse({ status: "success", message: "Team Updated Successfully!" });
+    }
+  }
+  return createResponse({ status: "error", message: "Team not found" });
+}
+
+function handleDeleteTeam(id) {
+  const sheet = ss.getSheetByName("Projects");
+  const data = sheet.getDataRange().getValues();
+  
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0].toString() === id.toString()) {
+      sheet.deleteRow(i + 1);
+      return createResponse({ status: "success", message: "Team Deleted Successfully!" });
+    }
+  }
+  return createResponse({ status: "error", message: "Team not found" });
 }

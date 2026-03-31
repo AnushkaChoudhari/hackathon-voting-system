@@ -1,5 +1,5 @@
 // 🗳️ HACKVOTE DASHBOARD LOGIC (Google Apps Script Version)
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyfL-ANFGJGF7O8ZpFrDSoa_Wmj6Kyy39DzbSEv1tQvx_BCXCj61MwgWezmCFWAFLva9Q/exec"; // Update this with your deployed URL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyWO2_L5XkeMFk32grFsxgoCo1vPwLBiru20QdWcyh1bIhyXukV4MRHK5QU3IoEDvjt4A/exec"; // Update this with your deployed URL
 
 document.addEventListener('DOMContentLoaded', () => {
     const studentPRN = localStorage.getItem("student_prn");

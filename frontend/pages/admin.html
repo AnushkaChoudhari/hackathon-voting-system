@@ -170,6 +170,7 @@
             color: #1e293b;
             margin-bottom: 2px;
             display: -webkit-box;
+            line-clamp: 1;
             -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
             overflow: hidden;
@@ -376,9 +377,14 @@
         <section class="table-section">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h3 class="card-title" style="margin-bottom: 0;">Project Analytics</h3>
-                <button class="btn-refresh" onclick="loadAdminData()">
-                    <i class="fas fa-sync-alt" id="refresh-icon"></i> Refresh Data
-                </button>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn-refresh" style="background: #6366f1; color: white; border: none;" onclick="openTeamModal()">
+                        <i class="fas fa-plus"></i> Add New Team
+                    </button>
+                    <button class="btn-refresh" onclick="loadAdminData()">
+                        <i class="fas fa-sync-alt" id="refresh-icon"></i> Refresh Data
+                    </button>
+                </div>
             </div>
             
             <div class="table-wrapper">
@@ -390,6 +396,7 @@
                             <th>Good</th>
                             <th>Average</th>
                             <th>Metric</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="project-admin-table">
@@ -401,7 +408,7 @@
     </main>
 
     <script>
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyfL-ANFGJGF7O8ZpFrDSoa_Wmj6Kyy39DzbSEv1tQvx_BCXCj61MwgWezmCFWAFLva9Q/exec";
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyWO2_L5XkeMFk32grFsxgoCo1vPwLBiru20QdWcyh1bIhyXukV4MRHK5QU3IoEDvjt4A/exec";
         let dashboardChart = null;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -483,6 +490,16 @@
                     <td><b style="color: #10b981">${p.goodCount}</b></td>
                     <td><b style="color: #f59e0b">${p.moderateCount}</b></td>
                     <td><span class="total-badge">${p.totalVotes} Total</span></td>
+                    <td style="display: flex; gap: 8px;">
+                        <button onclick="openTeamModal('${p.id}', '${p.title.replace(/'/g, "\\'")}', '${p.teamName.replace(/'/g, "\\'")}')" 
+                                style="padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc; color: #64748b; cursor: pointer;">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteTeam('${p.id}')" 
+                                style="padding: 8px; border-radius: 8px; border: 1px solid #fee2e2; background: #fef2f2; color: #ef4444; cursor: pointer;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
                 </tr>
             `).join('');
         }
@@ -490,6 +507,109 @@
         function logoutAdmin() {
             localStorage.removeItem('admin_session');
             window.location.href = '../index.html';
+        }
+    </script>
+
+    <!-- Team Add/Edit Modal -->
+    <div id="teamModal" class="modal" style="display: none; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px);">
+        <div class="modal-content admin-card" style="max-width: 500px; animation: modalSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+            <div class="card-title">
+                <i class="fas fa-users-gear" style="color: #6366f1;"></i>
+                <span id="modalTitle">Manage Team</span>
+            </div>
+            
+            <form id="teamForm" onsubmit="saveTeam(event)">
+                <input type="hidden" id="edit-team-id">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Project Title</label>
+                    <input type="text" id="project-title-input" required placeholder="e.g. Smart Traffic Control"
+                           style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; font-family: inherit;">
+                </div>
+                <div class="form-group" style="margin-bottom: 30px;">
+                    <label style="color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Team Name</label>
+                    <input type="text" id="team-name-input" required placeholder="e.g. Team Visionaries"
+                           style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; font-family: inherit;">
+                </div>
+                
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" class="btn-refresh" style="flex: 1; justify-content: center;" onclick="closeTeamModal()">Cancel</button>
+                    <button type="submit" class="btn-refresh" style="flex: 1; justify-content: center; background: #6366f1; color: white; border: none;">Save Team</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        @keyframes modalSlide {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+
+    <script>
+        function openTeamModal(id = '', title = '', team = '') {
+            document.getElementById('edit-team-id').value = id;
+            document.getElementById('project-title-input').value = title;
+            document.getElementById('team-name-input').value = team;
+            document.getElementById('modalTitle').innerText = id ? 'Edit Existing Team' : 'Register New Team';
+            document.getElementById('teamModal').style.display = 'flex';
+        }
+
+        function closeTeamModal() {
+            document.getElementById('teamModal').style.display = 'none';
+        }
+
+        async function saveTeam(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-team-id').value;
+            const projectTitle = document.getElementById('project-title-input').value;
+            const teamName = document.getElementById('team-name-input').value;
+            
+            const action = id ? 'updateTeam' : 'addTeam';
+            const payload = { action, id, team: { title: projectTitle, teamName: teamName } };
+            
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if(result.status === 'success') {
+                    closeTeamModal();
+                    loadAdminData();
+                } else {
+                    alert(result.message);
+                }
+            } catch(err) {
+                alert('Connection error');
+            }
+        }
+
+        async function deleteTeam(id) {
+            if(!confirm('Are you sure you want to delete this team? All associated votes will be preserved in records but the team will no longer be visible.')) return;
+            
+            try {
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'deleteTeam', id: id })
+                });
+                const result = await response.json();
+                if(result.status === 'success') {
+                    loadAdminData();
+                } else {
+                    alert(result.message);
+                }
+            } catch(err) {
+                alert('Connection error');
+            }
         }
     </script>
 </body>
