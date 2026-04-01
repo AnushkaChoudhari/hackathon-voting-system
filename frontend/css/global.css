@@ -172,43 +172,44 @@ input:focus {
     color: var(--primary);
 }
 
-/* Button Loading State */
-.btn-loading {
+/* Button Loading state (Using [loading] attribute for maximum reliability) */
+.btn[loading] {
     position: relative !important;
     color: transparent !important;
     pointer-events: none !important;
-    opacity: 0.9 !important;
-    min-width: 140px; /* Prevent collapse if text hides */
+    transition: none !important;
 }
 
-.btn-loading * {
+.btn[loading] * {
     visibility: hidden !important;
+    opacity: 0 !important;
 }
 
-.btn-loading::after {
-    content: "";
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    top: calc(50% - 11px);
-    left: calc(50% - 11px);
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top-color: white;
-    box-sizing: border-box;
-    animation: btn-spinner 0.6s linear infinite;
-    z-index: 5;
+.btn[loading]::after {
+    content: "" !important;
+    position: absolute !important;
+    width: 20px !important;
+    height: 20px !important;
+    top: 50% !important;
+    left: 50% !important;
+    margin-top: -10px !important;
+    margin-left: -10px !important;
+    border: 3px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50% !important;
+    border-top-color: #ffffff !important;
+    animation: btn-spinner 0.6s linear infinite !important;
+    z-index: 10 !important;
     visibility: visible !important;
 }
 
-.btn-outline.btn-loading::after {
-    border: 3px solid rgba(99, 102, 241, 0.1);
-    border-top-color: var(--primary);
+.btn-outline[loading]::after {
+    border-top-color: var(--primary) !important;
+    border-left-color: rgba(99, 102, 241, 0.1) !important;
 }
 
 @keyframes btn-spinner {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Tables (Admin Specific) */

@@ -51,27 +51,32 @@ async function sendOtp() {
     }
     
     const sendBtn = document.getElementById('send-otp-btn');
-    if (sendBtn) sendBtn.classList.add('btn-loading');
+    if (sendBtn) {
+        sendBtn.setAttribute('loading', '');
+        const originalText = sendBtn.innerHTML;
+        sendBtn.innerHTML = 'Sending...';
 
-    try {
-        const response = await fetch(GAS_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: "sendOtp", email: email })
-        });
-        const data = await response.json();
-        
-        if (data.status === "success") {
-            showToast("OTP sent to your email!", "success");
-            isOtpSent = true;
-            const signupBtn = document.getElementById('signup-submit-btn');
-            if(signupBtn) signupBtn.disabled = false;
-        } else {
-            showToast(data.message, "error");
+        try {
+            const response = await fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: "sendOtp", email: email })
+            });
+            const data = await response.json();
+            
+            if (data.status === "success") {
+                showToast("OTP sent to your email!", "success");
+                isOtpSent = true;
+                const signupBtn = document.getElementById('signup-submit-btn');
+                if(signupBtn) signupBtn.disabled = false;
+            } else {
+                showToast(data.message, "error");
+            }
+        } catch (err) {
+            showToast("Error sending OTP. Please try again.", "error");
+        } finally {
+            sendBtn.removeAttribute('loading');
+            sendBtn.innerHTML = originalText;
         }
-    } catch (err) {
-        showToast("Error sending OTP. Please try again.", "error");
-    } finally {
-        if (sendBtn) sendBtn.classList.remove('btn-loading');
     }
 }
 
@@ -90,9 +95,15 @@ async function signupStudent(event) {
         return showToast("Please verify OTP first!", "error");
     }
 
-    // Get the button from the event for guaranteed accuracy
-    const signupBtn = event.submitter || document.getElementById('signup-submit-btn');
-    if (signupBtn) signupBtn.classList.add('btn-loading');
+    // Use a direct targeted approach for the button
+    const signupBtn = document.getElementById('signup-submit-btn');
+    let originalSignupText = "";
+    if (signupBtn) {
+        originalSignupText = signupBtn.innerHTML;
+        signupBtn.setAttribute('loading', '');
+        signupBtn.innerHTML = 'Processing...';
+        console.log("Signup process started, button state updated.");
+    }
 
     const payload = {
         action: "signup",
@@ -122,7 +133,10 @@ async function signupStudent(event) {
         console.error("Signup error:", err);
         showToast("Signup failed. Server error.", "error");
     } finally {
-        if (signupBtn) signupBtn.classList.remove('btn-loading');
+        if (signupBtn) {
+            signupBtn.removeAttribute('loading');
+            signupBtn.innerHTML = originalSignupText;
+        }
     }
 }
 
@@ -137,8 +151,13 @@ async function loginStudent(event) {
         return showToast("Invalid PRN format. Please check and try again.", "error");
     }
 
-    const loginBtn = event.target.querySelector('button[type="submit"]');
-    if (loginBtn) loginBtn.classList.add('btn-loading');
+    const loginBtn = document.querySelector("#student-login-form button") || event.target.querySelector('button[type="submit"]');
+    let originalLoginText = "";
+    if (loginBtn) {
+        originalLoginText = loginBtn.innerHTML;
+        loginBtn.setAttribute('loading', '');
+        loginBtn.innerHTML = 'Logging in...';
+    }
 
     try {
         const res = await fetch(GAS_URL, {
@@ -162,7 +181,10 @@ async function loginStudent(event) {
     } catch (err) {
         showToast("Login failed. Check connection.", "error");
     } finally {
-        if (loginBtn) loginBtn.classList.remove('btn-loading');
+        if (loginBtn) {
+            loginBtn.removeAttribute('loading');
+            loginBtn.innerHTML = originalLoginText;
+        }
     }
 }
 

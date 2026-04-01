@@ -138,7 +138,12 @@ async function handleVoteSubmit(id) {
     if (!rating) return showToast("Please select a rating first!", "error");
 
     const submitBtn = document.querySelector(`#card-${id} .submit-vote-btn`);
-    if (submitBtn) submitBtn.classList.add('btn-loading');
+    let originalVoteText = "";
+    if (submitBtn) {
+        originalVoteText = submitBtn.innerHTML;
+        submitBtn.setAttribute('loading', '');
+        submitBtn.innerHTML = 'Submitting...';
+    }
 
     try {
         const prn = localStorage.getItem("student_prn");
@@ -169,7 +174,10 @@ async function handleVoteSubmit(id) {
     } catch (error) {
         showToast("Connection Error. Try again.", "error");
     } finally {
-        if (submitBtn && submitBtn.parentNode) submitBtn.classList.remove('btn-loading');
+        if (submitBtn && submitBtn.parentNode) {
+            submitBtn.removeAttribute('loading');
+            submitBtn.innerHTML = originalVoteText;
+        }
     }
 }
 
