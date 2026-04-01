@@ -110,7 +110,7 @@ async function signupStudent(event) {
 
         if (data.status === "success") {
             showToast("Account created successfully!", "success");
-            setTimeout(() => window.location.href = '../login.html', 1500);
+            setTimeout(() => window.location.href = 'login.html', 1500);
         } else {
             showToast(data.message, "error");
             alert("Registration Failed: " + data.message);
