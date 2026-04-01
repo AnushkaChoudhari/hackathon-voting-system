@@ -51,7 +51,7 @@ async function sendOtp() {
     }
     
     const sendBtn = document.getElementById('send-otp-btn');
-    if(sendBtn) sendBtn.innerText = "Sending...";
+    if (sendBtn) sendBtn.classList.add('btn-loading');
 
     try {
         const response = await fetch(GAS_URL, {
@@ -71,7 +71,7 @@ async function sendOtp() {
     } catch (err) {
         showToast("Error sending OTP. Please try again.", "error");
     } finally {
-        if(sendBtn) sendBtn.innerText = "Send OTP";
+        if (sendBtn) sendBtn.classList.remove('btn-loading');
     }
 }
 
@@ -101,6 +101,9 @@ async function signupStudent(event) {
         otp: document.getElementById('otp-input').value.trim()
     };
 
+    const signupBtn = document.getElementById('signup-submit-btn');
+    if (signupBtn) signupBtn.classList.add('btn-loading');
+
     try {
         const res = await fetch(GAS_URL, {
             method: 'POST',
@@ -117,6 +120,8 @@ async function signupStudent(event) {
         }
     } catch (err) {
         showToast("Signup failed. Server error.", "error");
+    } finally {
+        if (signupBtn) signupBtn.classList.remove('btn-loading');
     }
 }
 
@@ -130,6 +135,9 @@ async function loginStudent(event) {
     if (!validatePRN(prn)) {
         return showToast("Invalid PRN format. Please check and try again.", "error");
     }
+
+    const loginBtn = event.target.querySelector('button[type="submit"]');
+    if (loginBtn) loginBtn.classList.add('btn-loading');
 
     try {
         const res = await fetch(GAS_URL, {
@@ -152,6 +160,8 @@ async function loginStudent(event) {
         }
     } catch (err) {
         showToast("Login failed. Check connection.", "error");
+    } finally {
+        if (loginBtn) loginBtn.classList.remove('btn-loading');
     }
 }
 
