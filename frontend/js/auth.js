@@ -79,17 +79,20 @@ async function sendOtp() {
 async function signupStudent(event) {
     if (event) event.preventDefault();
     
+    // Form validation check
     const prnInput = document.getElementById('prn');
     const prnValue = prnInput ? prnInput.value.trim() : "";
     
-    if (!validatePRN(prnValue)) {
-        return; 
-    }
+    if (!validatePRN(prnValue)) return; 
 
     if (!isOtpSent) {
         alert("Please verify your OTP first!");
         return showToast("Please verify OTP first!", "error");
     }
+
+    // Get the button from the event for guaranteed accuracy
+    const signupBtn = event.submitter || document.getElementById('signup-submit-btn');
+    if (signupBtn) signupBtn.classList.add('btn-loading');
 
     const payload = {
         action: "signup",
@@ -100,9 +103,6 @@ async function signupStudent(event) {
         email: document.getElementById('email').value.trim(),
         otp: document.getElementById('otp-input').value.trim()
     };
-
-    const signupBtn = document.getElementById('signup-submit-btn');
-    if (signupBtn) signupBtn.classList.add('btn-loading');
 
     try {
         const res = await fetch(GAS_URL, {
@@ -119,6 +119,7 @@ async function signupStudent(event) {
             alert("Registration Failed: " + data.message);
         }
     } catch (err) {
+        console.error("Signup error:", err);
         showToast("Signup failed. Server error.", "error");
     } finally {
         if (signupBtn) signupBtn.classList.remove('btn-loading');
