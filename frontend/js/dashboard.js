@@ -10,7 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     const displayPRN = document.getElementById('display-prn');
-    if (displayPRN) displayPRN.innerText = localStorage.getItem("student_name") || studentPRN;
+    if (displayPRN) displayPRN.innerText = studentPRN;
+    
+    const displayNameEl = document.getElementById('display-name');
+    if (displayNameEl) displayNameEl.innerText = localStorage.getItem("student_name") || "Student";
     
     // Display student info (Targeting direct IDs from dashboard.html)
     const branchEl = document.getElementById('displayBranch');
