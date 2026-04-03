@@ -69,24 +69,34 @@ async function sendOtp() {
                 console.log("Sending to email:", email);
 
                 // 2. Send via EmailJS SDK (Bypassing GAS permission error)
-                // We send multiple possible keys to ensure one matches your template
+                // Sending multiple variations of keys to ensure compatibility with your template
                 const templateParams = {
                     to_email: email,
                     user_email: email,
                     email: email, 
                     otp_code: data.otp,
+                    otp: data.otp,         // Added for compatibility
+                    code: data.otp,        // Added for compatibility
                     to_name: name.split(' ')[0]
                 };
 
                 console.log("Final payload being sent to EmailJS:", templateParams);
 
-                const emailResponse = await emailjs.send("service_4t0gixg", "template_pwc83ij", templateParams);
-                console.log("EmailJS Success:", emailResponse);
-
-                showToast("OTP sent to your email!", "success");
-                isOtpSent = true;
-                const signupBtn = document.getElementById('signup-submit-btn');
-                if(signupBtn) signupBtn.disabled = false;
+                try {
+                    const emailResponse = await emailjs.send("service_4t0gixg", "template_pwc83ij", templateParams);
+                    console.log("EmailJS Success:", emailResponse);
+                    showToast("OTP sent to your email!", "success");
+                    isOtpSent = true;
+                    const signupBtn = document.getElementById('signup-submit-btn');
+                    if(signupBtn) signupBtn.disabled = false;
+                } catch (emailErr) {
+                    console.error("EmailJS Detailed Error:", emailErr);
+                    // If it's a 400, it might be the template/service ID or variables
+                    if (emailErr.status === 400) {
+                        alert("EmailJS Error (400): Check if your Template variables match the ones in code (otp, otp_code, or code).");
+                    }
+                    throw emailErr; // Re-throw to be caught by the outer catch
+                }
             } else {
                 showToast(data.message, "error");
             }
