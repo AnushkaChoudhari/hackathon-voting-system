@@ -1,6 +1,5 @@
 // 🗳️ HACKVOTE DASHBOARD LOGIC (Google Apps Script Version)
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwWBCwtbI3t5xjSljcVoiczdZ1_pWT8aYMxCI2pxc_B9JjZPG7x88IL02D6l54A_8-L5w/exec"; // Update this with your deployed URL
-const VOTING_OPEN = false; // 🚩 Set to true to enable voting on Hackathon day
 let totalTeams = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -32,11 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.display = text.includes(term) ? "" : "none";
             });
         });
-    }
-
-    const statusBanner = document.getElementById('voting-status-banner');
-    if (statusBanner && VOTING_OPEN) {
-        statusBanner.style.display = 'none';
     }
 
     loadTeams();
@@ -100,21 +94,15 @@ function createProjectCard(project) {
         </p>
         
         <div class="vote-actions" id="actions-${project.id}">
-            ${VOTING_OPEN ? `
-                <button class="vote-btn best" onclick="selectRating('${project.id}', 'best', this)" title="Best">
-                    <i class="fas fa-crown"></i><span class="btn-label">Best</span>
-                </button>
-                <button class="vote-btn good" onclick="selectRating('${project.id}', 'good', this)" title="Good">
-                    <i class="fas fa-star"></i><span class="btn-label">Good</span>
-                </button>
-                <button class="vote-btn moderate" onclick="selectRating('${project.id}', 'moderate', this)" title="Moderate">
-                    <i class="fas fa-thumbs-up"></i><span class="btn-label">Moderate</span>
-                </button>
-            ` : `
-                <div style="background: #f1f5f9; color: #64748b; padding: 12px; border-radius: 8px; font-weight: 700; text-align: center; width: 100%; border: 1px dashed #cbd5e1;">
-                    <i class="fas fa-clock"></i> Voting opens on Hackathon Day
-                </div>
-            `}
+            <button class="vote-btn best" onclick="selectRating('${project.id}', 'best', this)" title="Best">
+                <i class="fas fa-crown"></i><span class="btn-label">Best</span>
+            </button>
+            <button class="vote-btn good" onclick="selectRating('${project.id}', 'good', this)" title="Good">
+                <i class="fas fa-star"></i><span class="btn-label">Good</span>
+            </button>
+            <button class="vote-btn moderate" onclick="selectRating('${project.id}', 'moderate', this)" title="Moderate">
+                <i class="fas fa-thumbs-up"></i><span class="btn-label">Moderate</span>
+            </button>
         </div>
         
         <div id="selection-status-${project.id}" style="margin-top: 15px; text-align: center; height: 1.2rem;">
@@ -123,11 +111,9 @@ function createProjectCard(project) {
             </span>
         </div>
 
-        ${VOTING_OPEN ? `
-            <button class="btn btn-primary submit-vote-btn" onclick="handleVoteSubmit('${project.id}')" style="margin-top: 15px; width: 100%; border-radius: 10px; font-weight: 700;">
-                Submit Vote
-            </button>
-        ` : ''}
+        <button class="btn btn-primary submit-vote-btn" onclick="handleVoteSubmit('${project.id}')" style="margin-top: 15px; width: 100%; border-radius: 10px; font-weight: 700;">
+            Submit Vote
+        </button>
     `;
 
     if (hasVoted) setTimeout(() => applyVotedState(project.id), 0);
@@ -148,7 +134,6 @@ function selectRating(id, rating, element) {
 }
 
 async function handleVoteSubmit(id) {
-    if (!VOTING_OPEN) return showToast("Voting is currently closed!", "error");
     const rating = selections[id];
     if (!rating) return showToast("Please select a rating first!", "error");
 
