@@ -6,7 +6,7 @@ const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 // 📧 EMAILJS CONFIGURATION
 const EMAILJS_SERVICE_ID = "service_4t0gixg";
 const EMAILJS_TEMPLATE_ID = "template_pwc83ij";
-const EMAILJS_PUBLIC_KEY = "SBumvtJ4DKakh1gonuhST";
+const EMAILJS_PUBLIC_KEY = "owjYfAVMKoS83jmOb";
 const EMAILJS_PRIVATE_KEY = "SBumvtJ4DKakh1gonuhST";
 
 function doPost(e) {

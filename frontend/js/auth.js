@@ -1,5 +1,5 @@
 // 🗳️ HACKVOTE AUTH LOGIC (Google Apps Script Version)
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxrtDelL8Mxg4s8rr9Ep0FI0pHqwpKQ1t5PoWbGdKgintGZh9uax7IHwwIPPvBVSTsYYw/exec"; // Update this with your deployed URL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwfhU9TO-Tkka-VvX_0SwVYTYnxt3BMjVICRPKqnKcDIYclvZjcptbElSXko1TM2d0I-g/exec"; // Update this with your deployed URL
 
 // Multi-step signup state
 let isOtpSent = false;
@@ -83,7 +83,8 @@ async function sendOtp() {
                 console.log("Final payload being sent to EmailJS:", templateParams);
 
                 try {
-                    const emailResponse = await emailjs.send("service_4t0gixg", "template_pwc83ij", templateParams);
+                    const EMAILJS_PUBLIC_KEY = "owjYfAVMKoS83jmOb";
+                    const emailResponse = await emailjs.send("service_4t0gixg", "template_pwc83ij", templateParams, EMAILJS_PUBLIC_KEY);
                     console.log("EmailJS Success:", emailResponse);
                     showToast("OTP sent to your email!", "success");
                     isOtpSent = true;
@@ -91,11 +92,10 @@ async function sendOtp() {
                     if(signupBtn) signupBtn.disabled = false;
                 } catch (emailErr) {
                     console.error("EmailJS Detailed Error:", emailErr);
-                    // If it's a 400, it might be the template/service ID or variables
-                    if (emailErr.status === 400) {
-                        alert("EmailJS Error (400): Check if your Template variables match the ones in code (otp, otp_code, or code).");
-                    }
-                    throw emailErr; // Re-throw to be caught by the outer catch
+                    // This will show exactly what EmailJS is complaining about
+                    const errorText = emailErr.text || emailErr.message || JSON.stringify(emailErr);
+                    alert("EmailJS ERROR: " + errorText + "\n\n(Check if your Service ID or Template ID is linked correctly in the EmailJS dashboard)");
+                    throw emailErr;
                 }
             } else {
                 showToast(data.message, "error");
