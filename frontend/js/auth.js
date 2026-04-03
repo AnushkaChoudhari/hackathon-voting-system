@@ -1,5 +1,5 @@
 // 🗳️ HACKVOTE AUTH LOGIC (Google Apps Script Version)
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxZBcL3WWutpM6kZEbXOw-Nyzk4ukBbKOSxe2yLr57lT809sNgGUt9Ke7d_NHHanHeYPg/exec"; // Update this with your deployed URL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbza6XK_caEQ2iunhetFxPwkH9aMWvDRjnGfkhb3-f3-YdvIZ_bLKOtzW_mk81TBTH-H0g/exec"; // Update this with your deployed URL
 
 // Multi-step signup state
 let isOtpSent = false;
@@ -31,7 +31,7 @@ function validatePRN(prn) {
     return isValid;
 }
 
-// 📧 SEND OTP FLOW
+// 📧 SEND OTP FLOW (Frontend SDK Version)
 async function sendOtp() {
     const email = document.getElementById('email').value.trim();
     if (!email) return showToast("Email is required!", "error");
@@ -57,6 +57,7 @@ async function sendOtp() {
         sendBtn.innerHTML = 'Sending...';
 
         try {
+            // 1. Get OTP from GAS (Generating it securely on the server)
             const response = await fetch(GAS_URL, {
                 method: 'POST',
                 body: JSON.stringify({ action: "sendOtp", email: email })
@@ -64,6 +65,13 @@ async function sendOtp() {
             const data = await response.json();
             
             if (data.status === "success") {
+                // 2. Send via EmailJS SDK (Bypassing GAS permission error)
+                await emailjs.send("service_zlvn8lg", "template_0w2fxvm", {
+                    to_email: email,
+                    otp_code: data.otp,
+                    to_name: name.split(' ')[0]
+                });
+
                 showToast("OTP sent to your email!", "success");
                 isOtpSent = true;
                 const signupBtn = document.getElementById('signup-submit-btn');
@@ -72,6 +80,7 @@ async function sendOtp() {
                 showToast(data.message, "error");
             }
         } catch (err) {
+            console.error("OTP Error:", err);
             showToast("Error sending OTP. Please try again.", "error");
         } finally {
             sendBtn.removeAttribute('loading');

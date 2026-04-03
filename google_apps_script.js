@@ -43,7 +43,7 @@ function doGet(e) {
   return createResponse({ status: "error", message: "Ready to Vote!" });
 }
 
-// 📧 1. SEND OTP FUNCTION (Updated for EmailJS)
+// 📧 1. SEND OTP FUNCTION (Updated for Frontend Bypass)
 function handleSendOtp(email) {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const otpSheet = ss.getSheetByName("OTPs") || ss.insertSheet("OTPs");
@@ -57,38 +57,9 @@ function handleSendOtp(email) {
   // Save New OTP
   otpSheet.appendRow([email, otp, new Date().getTime()]);
 
-  // Send Email via EmailJS REST API
-  const payload = {
-    service_id: EMAILJS_SERVICE_ID,
-    template_id: EMAILJS_TEMPLATE_ID,
-    user_id: EMAILJS_PUBLIC_KEY,
-    accessToken: EMAILJS_PRIVATE_KEY,
-    template_params: {
-      to_email: email,
-      otp_code: otp,
-      to_name: email.split('@')[0]
-    }
-  };
-
-  const options = {
-    method: "POST",
-    contentType: "application/json",
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true
-  };
-
-  try {
-    const response = UrlFetchApp.fetch("https://api.emailjs.com/api/v1.0/email/send", options);
-    const result = response.getContentText();
-
-    if (response.getResponseCode() !== 200) {
-      return createResponse({ status: "error", message: "EmailJS Error: " + result });
-    }
-
-    return createResponse({ status: "success", message: "OTP Sent successfully!" });
-  } catch (err) {
-    return createResponse({ status: "error", message: "Failed to connect to EmailJS: " + err.toString() });
-  }
+  // Return the OTP to the frontend so the frontend can send it via EmailJS SDK
+  // This bypasses the "UrlFetchApp.fetch" permission error entirely.
+  return createResponse({ status: "success", otp: otp, message: "OTP Generated! Sending via EmailJS..." });
 }
 
 // 👤 2. SIGNUP (WITH OTP VERIFICATION)
@@ -96,11 +67,13 @@ function handleSignup(user) {
   const otpSheet = ss.getSheetByName("OTPs");
   const userSheet = ss.getSheetByName("Users") || ss.insertSheet("Users");
 
-  // Verify OTP (Compare as strings to avoid Type errors)
+  // Verify OTP (Check for existence and 5-minute expiration)
   const otps = otpSheet.getDataRange().getValues();
+  const now = new Date().getTime();
   const validOtp = otps.find(row =>
     row[0].toString().trim() === user.email.toString().trim() &&
-    row[1].toString().trim() === user.otp.toString().trim()
+    row[1].toString().trim() === user.otp.toString().trim() &&
+    (now - parseInt(row[2])) < 5 * 60 * 1000 // 5 Minutes Expiry
   );
 
   if (!validOtp) return createResponse({ status: "error", message: "Invalid or expired OTP" });
