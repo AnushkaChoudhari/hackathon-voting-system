@@ -37,7 +37,10 @@ function doGet(e) {
   return createResponse({ status: "error", message: "Ready to Vote!" });
 }
 
-// 📧 1. SEND OTP FUNCTION
+// 📧 1. SEND OTP FUNCTION (UPDATED FOR HIGH-VOLUME WITH BREVO)
+const BREVO_API_KEY = "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";
+const SENDER_EMAIL = "iotclub26@gmail.com";
+
 function handleSendOtp(email) {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const otpSheet = ss.getSheetByName("OTPs") || ss.insertSheet("OTPs");
@@ -51,12 +54,32 @@ function handleSendOtp(email) {
   // Save New OTP
   otpSheet.appendRow([email, otp, new Date().getTime()]);
 
-  // Send Email
-  MailApp.sendEmail({
-    to: email,
+  // Brevo API Logic
+  const url = "https://api.brevo.com/v3/smtp/email";
+  const payload = {
+    sender: { name: "Hackathon Voting System", email: SENDER_EMAIL },
+    to: [{ email: email }],
     subject: "HACKVOTE: Your OTP Code",
-    htmlBody: `<h3>Your Verification Code is: <b>${otp}</b></h3><p>Valid for 5 minutes.</p>`
-  });
+    htmlContent: `<h3>Your Verification Code is: <b>${otp}</b></h3><p>Valid for 5 minutes.</p>`
+  };
+
+  const options = {
+    method: "post",
+    contentType: "application/json",
+    headers: { "api-key": BREVO_API_KEY },
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+
+  try {
+    const response = UrlFetchApp.fetch(url, options);
+    if (response.getResponseCode() !== 201) {
+      console.error("Brevo Error:", response.getContentText());
+      return createResponse({ status: "error", message: "Failed to send email. Check Brevo settings." });
+    }
+  } catch (err) {
+    return createResponse({ status: "error", message: "Network Error: " + err.toString() });
+  }
 
   return createResponse({ status: "success", message: "OTP Sent to " + email });
 }
