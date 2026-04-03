@@ -3,6 +3,12 @@
 const SPREADSHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
 const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
+// 📧 EMAILJS CONFIGURATION
+const EMAILJS_SERVICE_ID = "service_zlvn8lg";
+const EMAILJS_TEMPLATE_ID = "template_0w2fxvm";
+const EMAILJS_PUBLIC_KEY = "mIyUaUy2VASG-iQaQ";
+const EMAILJS_PRIVATE_KEY = "L5HUWlDTJRtokkLgRrWc-";
+
 function doPost(e) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000); // Wait up to 10 seconds for a lock
@@ -16,7 +22,7 @@ function doPost(e) {
     if (action === "login") return handleLogin(data.prn);
     if (action === "vote") return handleVote(data.prn, data.projectId, data.voteType);
     if (action === "adminStats") return handleAdminStats();
-    
+
     // Admin CRUD Actions
     if (action === "addTeam") return handleAddTeam(data.team);
     if (action === "updateTeam") return handleUpdateTeam(data.id, data.team);
@@ -37,10 +43,7 @@ function doGet(e) {
   return createResponse({ status: "error", message: "Ready to Vote!" });
 }
 
-// 📧 1. SEND OTP FUNCTION (UPDATED FOR HIGH-VOLUME WITH BREVO)
-const BREVO_API_KEY = "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";
-const SENDER_EMAIL = "iotclub26@gmail.com";
-
+// 📧 1. SEND OTP FUNCTION (Updated for EmailJS)
 function handleSendOtp(email) {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const otpSheet = ss.getSheetByName("OTPs") || ss.insertSheet("OTPs");
@@ -54,34 +57,38 @@ function handleSendOtp(email) {
   // Save New OTP
   otpSheet.appendRow([email, otp, new Date().getTime()]);
 
-  // Brevo API Logic
-  const url = "https://api.brevo.com/v3/smtp/email";
+  // Send Email via EmailJS REST API
   const payload = {
-    sender: { name: "Hackathon Voting System", email: SENDER_EMAIL },
-    to: [{ email: email }],
-    subject: "HACKVOTE: Your OTP Code",
-    htmlContent: `<h3>Your Verification Code is: <b>${otp}</b></h3><p>Valid for 5 minutes.</p>`
+    service_id: EMAILJS_SERVICE_ID,
+    template_id: EMAILJS_TEMPLATE_ID,
+    user_id: EMAILJS_PUBLIC_KEY,
+    accessToken: EMAILJS_PRIVATE_KEY,
+    template_params: {
+      to_email: email,
+      otp_code: otp,
+      to_name: email.split('@')[0]
+    }
   };
 
   const options = {
-    method: "post",
+    method: "POST",
     contentType: "application/json",
-    headers: { "api-key": BREVO_API_KEY },
     payload: JSON.stringify(payload),
     muteHttpExceptions: true
   };
 
   try {
-    const response = UrlFetchApp.fetch(url, options);
-    if (response.getResponseCode() !== 201) {
-      console.error("Brevo Error:", response.getContentText());
-      return createResponse({ status: "error", message: "Failed to send email. Check Brevo settings." });
-    }
-  } catch (err) {
-    return createResponse({ status: "error", message: "Network Error: " + err.toString() });
-  }
+    const response = UrlFetchApp.fetch("https://api.emailjs.com/api/v1.0/email/send", options);
+    const result = response.getContentText();
 
-  return createResponse({ status: "success", message: "OTP Sent to " + email });
+    if (response.getResponseCode() !== 200) {
+      return createResponse({ status: "error", message: "EmailJS Error: " + result });
+    }
+
+    return createResponse({ status: "success", message: "OTP Sent successfully!" });
+  } catch (err) {
+    return createResponse({ status: "error", message: "Failed to connect to EmailJS: " + err.toString() });
+  }
 }
 
 // 👤 2. SIGNUP (WITH OTP VERIFICATION)
@@ -97,7 +104,7 @@ function handleSignup(user) {
   );
 
   if (!validOtp) return createResponse({ status: "error", message: "Invalid or expired OTP" });
-  
+
   // Backend PRN Validation (8 Digits + 1 Alphabet)
   const prnRegex = /^\d{8}[A-Za-z]$/;
   const prn = user.prn ? user.prn.toString().trim() : "";
@@ -119,7 +126,7 @@ function handleSignup(user) {
 // 🔑 3. LOGIN
 function handleLogin(prn) {
   const userSheet = ss.getSheetByName("Users") || ss.insertSheet("Users");
-  
+
   // Backend PRN Validation
   const prnRegex = /^\d{8}[A-Za-z]$/;
   if (!prnRegex.test(prn.toString().trim())) {
@@ -201,16 +208,16 @@ function handleAdminStats() {
   const projectSheet = ss.getSheetByName("Projects");
   const voteSheet = ss.getSheetByName("Votes") || ss.insertSheet("Votes");
   const userSheet = ss.getSheetByName("Users") || ss.insertSheet("Users");
-  
+
   const projects = projectSheet.getDataRange().getValues();
   const votes = voteSheet.getDataRange().getValues();
   const users = userSheet.getDataRange().getValues();
-  
+
   const headers = projects.shift();
   const projectStats = projects.map(p => {
     const id = p[0].toString();
     const pVotes = votes.filter(v => v[1].toString() === id);
-    
+
     return {
       id: id,
       title: p[1],
@@ -221,13 +228,13 @@ function handleAdminStats() {
       totalVotes: pVotes.length
     };
   });
-  
+
   const mix = {
     best: votes.filter(v => v[2] === "best").length,
     good: votes.filter(v => v[2] === "good").length,
     moderate: votes.filter(v => v[2] === "moderate").length
   };
-  
+
   return createResponse({
     status: "success",
     totalProjects: projects.length,
@@ -247,17 +254,17 @@ function handleAddTeam(team) {
   const sheet = ss.getSheetByName("Projects") || ss.insertSheet("Projects");
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
-  
+
   // Find project with highest ID
   let maxId = 0;
-  if(data.length > 1) {
-    for(let i=1; i<data.length; i++) {
+  if (data.length > 1) {
+    for (let i = 1; i < data.length; i++) {
       let idNum = parseInt(data[i][0]);
-      if(!isNaN(idNum) && idNum > maxId) maxId = idNum;
+      if (!isNaN(idNum) && idNum > maxId) maxId = idNum;
     }
   }
   const nextId = (maxId + 1).toString();
-  
+
   const newRow = headers.map(h => {
     if (h === "id") return nextId;
     if (h === "title") return team.title || "";
@@ -266,7 +273,7 @@ function handleAddTeam(team) {
     if (h === "votesCount") return 0;
     return "";
   });
-  
+
   sheet.appendRow(newRow);
   return createResponse({ status: "success", message: "Team Added Successfully!", id: nextId });
 }
@@ -275,7 +282,7 @@ function handleUpdateTeam(id, teamData) {
   const sheet = ss.getSheetByName("Projects");
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
-  
+
   for (let i = 1; i < data.length; i++) {
     if (data[i][0].toString() === id.toString()) {
       const rowNum = i + 1;
@@ -293,7 +300,7 @@ function handleUpdateTeam(id, teamData) {
 function handleDeleteTeam(id) {
   const sheet = ss.getSheetByName("Projects");
   const data = sheet.getDataRange().getValues();
-  
+
   for (let i = 1; i < data.length; i++) {
     if (data[i][0].toString() === id.toString()) {
       sheet.deleteRow(i + 1);
