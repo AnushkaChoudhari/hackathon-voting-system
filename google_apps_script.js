@@ -4,10 +4,10 @@ const SPREADSHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
 const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
 // 📧 EMAILJS CONFIGURATION
-const EMAILJS_SERVICE_ID = "service_zlvn8lg";
-const EMAILJS_TEMPLATE_ID = "template_0w2fxvm";
-const EMAILJS_PUBLIC_KEY = "mIyUaUy2VASG-iQaQ";
-const EMAILJS_PRIVATE_KEY = "L5HUWlDTJRtokkLgRrWc-";
+const EMAILJS_SERVICE_ID = "service_4t0gixg";
+const EMAILJS_TEMPLATE_ID = "template_pwc83ij";
+const EMAILJS_PUBLIC_KEY = "SBum•••••••••••••••••"; // User to provide full Public Key
+const EMAILJS_PRIVATE_KEY = "SBum•••••••••••••••••"; // User to provide full Private Key
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
