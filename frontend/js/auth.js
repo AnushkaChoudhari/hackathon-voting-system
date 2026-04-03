@@ -65,12 +65,23 @@ async function sendOtp() {
             const data = await response.json();
             
             if (data.status === "success") {
+                console.log("OTP received from GAS:", data.otp);
+                console.log("Sending to email:", email);
+
                 // 2. Send via EmailJS SDK (Bypassing GAS permission error)
-                await emailjs.send("service_zlvn8lg", "template_0w2fxvm", {
+                // We send multiple possible keys to ensure one matches your template
+                const templateParams = {
                     to_email: email,
+                    user_email: email,
+                    email: email, 
                     otp_code: data.otp,
                     to_name: name.split(' ')[0]
-                });
+                };
+
+                console.log("Final payload being sent to EmailJS:", templateParams);
+
+                const emailResponse = await emailjs.send("service_zlvn8lg", "template_0w2fxvm", templateParams);
+                console.log("EmailJS Success:", emailResponse);
 
                 showToast("OTP sent to your email!", "success");
                 isOtpSent = true;
