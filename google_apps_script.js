@@ -6,8 +6,8 @@ const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 // 📧 EMAILJS CONFIGURATION
 const EMAILJS_SERVICE_ID = "service_4t0gixg";
 const EMAILJS_TEMPLATE_ID = "template_pwc83ij";
-const EMAILJS_PUBLIC_KEY = "SBum•••••••••••••••••"; // User to provide full Public Key
-const EMAILJS_PRIVATE_KEY = "SBum•••••••••••••••••"; // User to provide full Private Key
+const EMAILJS_PUBLIC_KEY = "SBumvtJ4DKakh1gonuhST";
+const EMAILJS_PRIVATE_KEY = "SBumvtJ4DKakh1gonuhST";
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
