@@ -63,6 +63,11 @@ async function loadTeams() {
                 project.teamName = project.teamName || project.teamname || "Unknown Team";
                 project.title = project.title || "Untitled Project";
                 
+                // Better video link normalization
+                let vLink = project.videoLink || project['Video Link'] || "";
+                if(typeof vLink === 'string' && (vLink.toLowerCase().trim() === 'n/a' || vLink.toLowerCase().includes('not available') || vLink === 'nan')) vLink = "";
+                project.videoLink = vLink;
+                
                 const card = createProjectCard(project);
                 container.appendChild(card);
             });
@@ -92,6 +97,17 @@ function createProjectCard(project) {
         <p style="font-size: 0.9rem; color: var(--primary); font-weight: 600; margin-bottom: 20px;">
             Theme: ${project.theme || 'General'}
         </p>
+
+        <div class="video-link-container">
+            ${(project.videoLink) ? 
+                `<a href="${project.videoLink}" target="_blank" class="video-btn">
+                    <i class="fab fa-youtube"></i> Watch Video
+                </a>` : 
+                `<div class="video-btn unavailable">
+                    <i class="fas fa-video-slash"></i> Video not available
+                </div>`
+            }
+        </div>
         
         <div class="vote-actions" id="actions-${project.id}">
             <button class="vote-btn best" onclick="selectRating('${project.id}', 'best', this)" title="Best">

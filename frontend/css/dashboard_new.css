@@ -310,3 +310,50 @@ nav.dashboard-nav {
     .projects-grid { grid-template-columns: 1fr; }
     .progress-container-card { padding: 20px; }
 }
+
+/* 🎥 Video Button Modern Styling */
+.video-link-container {
+    margin: 15px 0 20px;
+    width: 100%;
+}
+
+.video-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: none;
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.video-btn i {
+    font-size: 1.1rem;
+}
+
+.video-btn:hover:not(.unavailable) {
+    background: #ef4444;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
+}
+
+.video-btn.unavailable {
+    background: #f1f5f9;
+    color: #94a3b8;
+    cursor: not-allowed;
+    border: 1px dashed #cbd5e1;
+    font-weight: 600;
+}
+
+.video-btn.unavailable i {
+    color: #cbd5e1;
+}
