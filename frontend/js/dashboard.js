@@ -1,5 +1,6 @@
 // 🗳️ HACKVOTE DASHBOARD LOGIC (Google Apps Script Version)
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwWBCwtbI3t5xjSljcVoiczdZ1_pWT8aYMxCI2pxc_B9JjZPG7x88IL02D6l54A_8-L5w/exec"; // Update this with your deployed URL
+const VOTING_ENABLED = false; // Set this to true on hackathon day
 let totalTeams = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -31,6 +32,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.style.display = text.includes(term) ? "" : "none";
             });
         });
+    }
+
+    // Toggle Voting UI Visibility
+    const progressCard = document.getElementById('voting-progress-card');
+    const soonNotice = document.getElementById('voting-soon-notice');
+    if (VOTING_ENABLED) {
+        if (progressCard) progressCard.style.display = 'block';
+        if (soonNotice) soonNotice.style.display = 'none';
+    } else {
+        if (progressCard) progressCard.style.display = 'none';
+        if (soonNotice) soonNotice.style.display = 'block';
     }
 
     loadTeams();
@@ -98,7 +110,7 @@ function createProjectCard(project) {
             Theme: ${project.theme || 'General'}
         </p>
 
-        <div class="video-link-container">
+        <div class="video-link-container" style="margin-bottom: 15px;">
             ${(project.videoLink) ? 
                 `<a href="${project.videoLink}" target="_blank" class="video-btn">
                     <i class="fab fa-youtube"></i> Watch Video
@@ -109,6 +121,7 @@ function createProjectCard(project) {
             }
         </div>
         
+        ${VOTING_ENABLED ? `
         <div class="vote-actions" id="actions-${project.id}">
             <button class="vote-btn best" onclick="selectRating('${project.id}', 'best', this)" title="Best">
                 <i class="fas fa-crown"></i><span class="btn-label">Best</span>
@@ -130,6 +143,11 @@ function createProjectCard(project) {
         <button class="btn btn-primary submit-vote-btn" onclick="handleVoteSubmit('${project.id}')" style="margin-top: 15px; width: 100%; border-radius: 10px; font-weight: 700;">
             Submit Vote
         </button>
+        ` : `
+        <div class="voting-disabled-notice" style="background: #f8fafc; border: 1px dashed var(--border-color); color: var(--text-muted); padding: 15px; border-radius: 10px; text-align: center; font-size: 0.85rem; font-weight: 600;">
+            <i class="fas fa-clock" style="margin-right: 5px;"></i> Voting will start on Hackathon Day
+        </div>
+        `}
     `;
 
     if (hasVoted) setTimeout(() => applyVotedState(project.id), 0);
