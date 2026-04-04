@@ -165,6 +165,8 @@ async function handleVoteSubmit(id) {
         const prn = localStorage.getItem("student_prn");
         const response = await fetch(GAS_URL, {
             method: "POST",
+            mode: 'cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({ 
                 action: "vote", 
                 prn: prn, 

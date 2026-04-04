@@ -60,6 +60,8 @@ async function sendOtp() {
             // 1. Get OTP from GAS (Generating it securely on the server)
             const response = await fetch(GAS_URL, {
                 method: 'POST',
+                mode: 'cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: "sendOtp", email: email })
             });
             const data = await response.json();
@@ -144,6 +146,8 @@ async function signupStudent(event) {
     try {
         const res = await fetch(GAS_URL, {
             method: 'POST',
+            mode: 'cors',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify(payload)
         });
         const data = await res.json();
