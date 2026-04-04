@@ -1,5 +1,5 @@
 // 🗳️ HACKVOTE DASHBOARD LOGIC (Google Apps Script Version)
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyRvfOYpFHdHVs79AJOF0AnVjzxsUFLcqyuHEFlDg-ow4JPXML4n09T2RpxNgmnKPzL6w/exec"; // Update this with your deployed URL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwiupi7npgLXOpmYDKHOF1PW04BO0z8QsQlARDzl7r52b4aXgcdwoGQzlACUgWB_FTCyQ/exec"; // Update this with your deployed URL
 let totalTeams = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
