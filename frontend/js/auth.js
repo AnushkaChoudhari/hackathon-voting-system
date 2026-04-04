@@ -1,5 +1,5 @@
 // 🗳️ HACKVOTE AUTH LOGIC (Google Apps Script Version)
-const GAS_URL = "https://script.google.com/macros/s/AKfycbylHrGSDmKcv6U7bpdbOkQRUPYftRbyumPTmG_MK8fWyVK76tnn2CI0849RoaJ6GqaXOw/exec"; // Update this with your deployed URL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxvNH5o34K34Dbi8y7RNqOqE676OMWnXB-HkbtkZTZhvKuByyt2fU9zTTx-GLsD8pSJfQ/exec"; // Update this with your deployed URL
 
 // Multi-step signup state
 let isOtpSent = false;
@@ -72,18 +72,14 @@ async function sendOtp() {
                 // Sending multiple variations of keys to ensure compatibility with your template
                 const templateParams = {
                     to_email: email,
-                    user_email: email,
-                    email: email, 
                     otp_code: data.otp,
-                    otp: data.otp,         // Added for compatibility
-                    code: data.otp,        // Added for compatibility
                     to_name: name.split(' ')[0]
                 };
 
                 console.log("Final payload being sent to EmailJS:", templateParams);
 
                 try {
-                    const EMAILJS_PUBLIC_KEY = "YIRYLzxchWBI9FAL4";
+                    const EMAILJS_PUBLIC_KEY = "L-qXNSB9YmPQMvZyY";
                     const emailResponse = await emailjs.send("service_lexkd4d", "template_iqu76b8", templateParams, EMAILJS_PUBLIC_KEY);
                     console.log("EmailJS Success:", emailResponse);
                     showToast("OTP sent to your email!", "success");
