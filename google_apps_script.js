@@ -8,6 +8,7 @@ const EMAILJS_SERVICE_ID = "service_oqyts3d";
 const EMAILJS_TEMPLATE_ID = "template_5d6gp3e";
 const EMAILJS_PUBLIC_KEY = "yMyJcQw19j6P_qJO6";
 const EMAILJS_PRIVATE_KEY = "SBumvtJ4DKakh1gonuhST";
+const REGISTRATIONS_CLOSED = true;
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
@@ -45,6 +46,9 @@ function doGet(e) {
 
 // 📧 1. SEND OTP FUNCTION (Updated for Frontend Bypass)
 function handleSendOtp(email) {
+  if (REGISTRATIONS_CLOSED) {
+    return createResponse({ status: "error", message: "Registrations are now closed. No new OTPs can be issued." });
+  }
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const otpSheet = ss.getSheetByName("OTPs") || ss.insertSheet("OTPs");
 
@@ -64,6 +68,9 @@ function handleSendOtp(email) {
 
 // 👤 2. SIGNUP (WITH OTP VERIFICATION)
 function handleSignup(user) {
+  if (REGISTRATIONS_CLOSED) {
+    return createResponse({ status: "error", message: "Registrations are now closed." });
+  }
   const otpSheet = ss.getSheetByName("OTPs");
   const userSheet = ss.getSheetByName("Users") || ss.insertSheet("Users");
 

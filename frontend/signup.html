@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Signup - HackVote</title>
+    <title>Registrations Closed - HackVote</title>
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/global.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,63 +22,19 @@
         </a>
         <div class="auth-container card">
             <h2 class="gradient-text"
-                style="font-size: 2.2rem; margin-bottom: 8px; text-align: center; font-weight: 900;">Student Signup</h2>
-            <p
-                style="text-align: center; color: var(--text-muted); margin-bottom: 30px; line-height: 1.5; font-size: 0.95rem;">
-                Create your account to participate in voting</p>
-            <form id="signup-form" novalidate onsubmit="signupStudent(event)">
-                <div class="form-group">
-                    <label for="fullName">Full Name</label>
-                    <input type="text" id="fullName" name="fullName" placeholder="Enter your full name">
+                style="font-size: 2.2rem; margin-bottom: 8px; text-align: center; font-weight: 900;">Registrations Closed</h2>
+            <div style="text-align: center; padding: 40px 20px; background: rgba(244, 63, 94, 0.05); border: 2px dashed #f43f5e; border-radius: 16px;">
+                <div style="font-size: 3.5rem; color: #f43f5e; margin-bottom: 20px;">
+                    <i class="fas fa-calendar-times"></i>
                 </div>
-                <div class="form-group" id="email-section">
-                    <label for="email">Email ID</label>
-                    <input type="email" id="email" name="email" placeholder="e.g. abc@gmail.com">
-                    <button type="button" id="send-otp-btn" class="btn btn-primary" onclick="sendOtp()"
-                        style="margin-top: 10px; width: 100%; padding: 10px; font-size: 0.9rem; background: var(--secondary);">
-                        <i class="fas fa-paper-plane"></i> Send OTP
-                    </button>
+                <h3 style="font-size: 1.5rem; font-weight: 900; color: #1e293b; margin-bottom: 15px;">Deadline Reached</h3>
+                <p style="color: var(--text-muted); font-weight: 600; line-height: 1.6; margin-bottom: 0;">
+                    Registration for the Hackathon voting portal has officially ended. We are no longer accepting new participant registrations.
+                </p>
+                <div style="margin-top: 25px; font-size: 0.85rem; background: #fff; padding: 10px; border-radius: 8px; color: #f43f5e; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">
+                    Closed on April 6, 2026
                 </div>
-                <div class="form-group" id="otp-section"
-                    style="background: rgba(99, 102, 241, 0.05); padding: 15px; border-radius: 12px; border: 1px dashed var(--primary); margin-bottom: 20px;">
-                    <label for="otp-input">Verification Code (OTP)</label>
-                    <input type="text" id="otp-input" name="otp" placeholder="Enter 6-digit code" maxlength="6"
-                        style="text-align: center; letter-spacing: 5px; font-size: 1.2rem; font-weight: 900;">
-                </div>
-                <div class="form-group">
-                    <label for="branch">Branch</label>
-                    <select id="branch" name="branch"
-                        style="width: 100%; padding: 12px 16px; background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-main); font-family: 'Outfit', sans-serif;">
-                        <option value="" disabled selected>Select Your Branch</option>
-                        <option value="Computer Engineering">Computer Engineering</option>
-                        <option value="IT">IT</option>
-                        <option value="AI & DS">AI & DS</option>
-                        <option value="EnTC">EnTC</option>
-                        <option value="Mechanical">Mechanical</option>
-                        <option value="Electrical">Electrical</option>
-                        <option value="Civil">Civil</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="year">Year</label>
-                    <select id="year" name="year"
-                        style="width: 100%; padding: 12px 16px; background: #ffffff; border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-main); font-family: 'Outfit', sans-serif;">
-                        <option value="" disabled selected>Select Your Year</option>
-                        <option value="First Year">First Year</option>
-                        <option value="Second Year">Second Year</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="prn">PRN Number</label>
-                    <input type="text" id="prn" name="prn" placeholder="Enter your PRN" pattern="^\d{8}[A-Za-z]$"
-                        maxlength="9" required autocomplete="off"
-                        oninput="this.value = this.value.toUpperCase(); if(typeof validateField === 'function') validateField(this)">
-                </div>
-                <button type="submit" id="signup-submit-btn" class="btn btn-primary" disabled
-                    style="width: 100%; font-size: 1.1rem; padding: 14px; margin-top: 15px;">
-                    Complete Registration
-                </button>
-            </form>
+            </div>
             <div
                 style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 1px solid var(--border-color);">
                 <p style="font-size: 0.95rem; color: var(--text-muted);">
